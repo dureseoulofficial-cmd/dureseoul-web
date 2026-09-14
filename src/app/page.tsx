@@ -57,7 +57,7 @@ function AnimatedText({ text, className, delayOffset = 0 }: { text: string, clas
 
   const words = text.split(" ");
   return (
-    <p ref={ref} className={`${className} flex flex-wrap gap-x-[0.25em] gap-y-[0.1em]`}>
+    <p ref={ref} className={`${className} flex flex-wrap gap-x-[0.25em] gap-y-[0.1em] break-keep`}>
       {words.map((word, i) => (
         <span key={i} className="overflow-hidden inline-block">
           <motion.span
@@ -104,7 +104,7 @@ function HeroHeadline({ text }: { text: string }) {
   };
 
   if (shouldReduceMotion) {
-    return <h1 className="text-[76px] md:text-[103px] leading-[0.8] tracking-tighter uppercase font-bold text-fg">{text}</h1>;
+    return <h1 className="text-[40px] sm:text-[70px] md:text-[103px] leading-[0.9] md:leading-[0.8] tracking-tighter uppercase font-bold text-fg">{text}</h1>;
   }
 
   return (
@@ -112,7 +112,7 @@ function HeroHeadline({ text }: { text: string }) {
       variants={container}
       initial="hidden"
       animate="show"
-      className="text-[70px] md:text-[103px] leading-[0.8] tracking-tighter uppercase font-bold text-fg flex flex-wrap gap-x-[15px] md:gap-x-[20px]"
+      className="text-[40px] sm:text-[70px] md:text-[103px] leading-[0.9] md:leading-[0.8] tracking-tighter uppercase font-bold text-fg flex flex-wrap gap-x-[10px] md:gap-x-[20px]"
     >
       {words.map((word, i) => (
         <span key={i} className="overflow-hidden inline-block pb-4">
@@ -411,7 +411,7 @@ export default function Home() {
         {/* Hero */}
         <section className="pt-[60px] pb-[76px] md:pt-[100px] md:pb-[120px]">
           <span className="text-[11px] font-mono tracking-widest uppercase mb-12 block text-muted">Seoul — Software Studio</span>
-          <h2 className="text-[46px] md:text-[76px] font-bold mb-6 tracking-tight text-fg">두레</h2>
+          <h2 className="text-[36px] md:text-[76px] font-bold mb-6 tracking-tight text-fg">두레</h2>
           <p className="text-[15px] md:text-[18px] font-mono text-muted mb-16 max-w-xl">
             DURE (두레) — Redefining the ancient infrastructure of collective intelligence for the AI era.
           </p>
@@ -421,8 +421,8 @@ export default function Home() {
           </div>
 
           <AnimatedText 
-            text="기술은 인프라이며, 서사는 사람에게 있습니다. 두레서울은 거대한 알고리즘 아래 숨겨진 당신의 고유한 가치를 발굴하고 연결하는 차세대 소프트웨어 스튜디오입니다."
-            className="text-[18px] md:text-[34px] font-bold leading-tight max-w-4xl tracking-tight text-fg"
+            text="우리는 단순한 노동의 교환이 아닌, 구체적이고 정밀한 기술과 경험의 매칭을 믿습니다. 서울이라는 메가시티의 압도적인 밀도를 활용해, 당신이 가진 특별한 가치를 가장 필요로 하는 사람과 연결합니다." 
+            className="text-[20px] md:text-[34px] leading-snug md:leading-tight text-fg/80 max-w-4xl"
             delayOffset={0.5}
           />
         </section>
@@ -431,7 +431,7 @@ export default function Home() {
         <AnimatedSection border className="py-[76px] md:py-[120px] grid grid-cols-1 md:grid-cols-12 gap-8">
           <div className="md:col-span-4">
             <span className="text-[11px] font-mono tracking-widest uppercase block mb-4 text-muted">01 / REDEFINING CONNECTION</span>
-            <h3 className="text-[34px] md:text-[46px] font-bold leading-[0.9] tracking-tight uppercase text-fg">A new infrastructure for human singularity.</h3>
+            <h3 className="text-[28px] md:text-[46px] font-bold leading-[0.9] tracking-tight uppercase text-fg">A new infrastructure for human singularity.</h3>
           </div>
           <div className="md:col-span-8 md:col-start-6 text-[18px] md:text-[34px] font-medium leading-[1.3] tracking-tight space-y-8 md:space-y-12 max-w-3xl text-fg">
             <AnimatedText text="과거의 두레가 물리적 노동의 교환이었다면, 우리가 짓는 두레는 '경험과 특이성'의 교환망입니다." />
@@ -443,7 +443,7 @@ export default function Home() {
         <AnimatedSection border className="py-[76px] md:py-[120px] grid grid-cols-1 md:grid-cols-12 gap-8">
           <div className="md:col-span-4">
             <span className="text-[11px] font-mono tracking-widest uppercase block mb-4 text-muted">02 / BEYOND AUTOMATION</span>
-            <h3 className="text-[34px] md:text-[46px] font-bold leading-[0.9] tracking-tight uppercase text-fg">Intelligence amplifies the specific.</h3>
+            <h3 className="text-[28px] md:text-[46px] font-bold leading-[0.9] tracking-tight uppercase text-fg">Intelligence amplifies the specific.</h3>
           </div>
           <div className="md:col-span-8 md:col-start-6 text-[18px] md:text-[34px] font-medium leading-[1.3] tracking-tight space-y-8 md:space-y-12 max-w-3xl text-fg">
             <AnimatedText text="우리는 AI가 인간을 대체할 것이라는 서사에 동의하지 않습니다. 범용적인 작업이 자동화될수록, 오직 당신만이 가진 구체적인 경험과 비정형적인 지혜의 가치는 폭발적으로 상승합니다." />
