@@ -134,11 +134,11 @@ function Counter() {
   useEffect(() => {
     if (isInView) {
       if (shouldReduceMotion) {
-        requestAnimationFrame(() => setCount(940));
+        requestAnimationFrame(() => setCount(930));
         return;
       }
       
-      const end = 940;
+      const end = 930;
       const duration = 2500;
       const startTime = performance.now();
       
@@ -342,7 +342,7 @@ function WaitlistForm() {
           disabled={status === "loading" || status === "success"}
           className="bg-fg text-bg px-8 py-4 font-bold hover:bg-muted transition-colors disabled:opacity-50"
         >
-          {status === "loading" ? "..." : status === "success" ? "완료됨" : "합류하기"}
+          {status === "loading" ? "..." : status === "success" ? "완료됨" : "베타 초대 받기"}
         </button>
       </form>
       {message && (
@@ -413,7 +413,7 @@ export default function Home() {
           <span className="text-[11px] font-mono tracking-widest uppercase mb-12 block text-muted">Seoul — Software Studio</span>
           <h2 className="text-[36px] md:text-[76px] font-bold mb-6 tracking-tight text-fg">두레</h2>
           <p className="text-[15px] md:text-[18px] font-mono text-muted mb-16 max-w-xl">
-            DURE (두레) — Redefining the ancient infrastructure of collective intelligence for the AI era.
+            DURE (두레) — Rebuilding Korea&apos;s oldest mutual-aid network for the AI era.
           </p>
           
           <div className="mb-12">
@@ -421,7 +421,7 @@ export default function Home() {
           </div>
 
           <AnimatedText 
-            text="우리는 단순한 노동의 교환이 아닌, 구체적이고 정밀한 기술과 경험의 매칭을 믿습니다. 서울이라는 메가시티의 압도적인 밀도를 활용해, 당신이 가진 특별한 가치를 가장 필요로 하는 사람과 연결합니다." 
+            text="우리는 노동의 교환이 아니라, 경험의 교환을 믿습니다. 자격증에도 이력서에도 적히지 않는 당신의 구체적인 기술과 경험을, 서울이라는 메가시티의 밀도 안에서 그것을 가장 필요로 하는 단 한 사람에게 연결합니다." 
             className="text-[20px] md:text-[34px] leading-snug md:leading-tight text-fg/80 max-w-4xl"
             delayOffset={0.5}
           />
@@ -431,11 +431,11 @@ export default function Home() {
         <AnimatedSection border className="py-[76px] md:py-[120px] grid grid-cols-1 md:grid-cols-12 gap-8">
           <div className="md:col-span-4">
             <span className="text-[11px] font-mono tracking-widest uppercase block mb-4 text-muted">01 / REDEFINING CONNECTION</span>
-            <h3 className="text-[28px] md:text-[46px] font-bold leading-[0.9] tracking-tight uppercase text-fg">A new infrastructure for human singularity.</h3>
+            <h3 className="text-[28px] md:text-[46px] font-bold leading-[0.9] tracking-tight uppercase text-fg">Mutual aid, rebuilt as software.</h3>
           </div>
           <div className="md:col-span-8 md:col-start-6 text-[18px] md:text-[34px] font-medium leading-[1.3] tracking-tight space-y-8 md:space-y-12 max-w-3xl text-fg">
-            <AnimatedText text="과거의 두레가 물리적 노동의 교환이었다면, 우리가 짓는 두레는 '경험과 특이성'의 교환망입니다." />
-            <AnimatedText text="기록되지 않아도 작동하던 고도의 신뢰망을, 이제 현대적인 소프트웨어의 정교함으로 다시 설계합니다. 이는 단순한 자선이 아니라, 가장 진보된 형태의 탈중앙화 인프라입니다." />
+            <AnimatedText text="과거의 두레는 모내기와 추수를 함께 하던 노동의 약속이었습니다. 우리가 짓는 두레는 경험과 안목을 주고받는 약속입니다." />
+            <AnimatedText text="계약서 없이도 작동하던 마을의 신뢰망을, 이제 소프트웨어의 정밀함으로 다시 설계합니다. 품앗이도, 봉사도 아닙니다. 당신이 가진 것과 필요한 것이 정확히 맞물리는 교환입니다." />
           </div>
         </AnimatedSection>
 
@@ -446,8 +446,8 @@ export default function Home() {
             <h3 className="text-[28px] md:text-[46px] font-bold leading-[0.9] tracking-tight uppercase text-fg">Intelligence amplifies the specific.</h3>
           </div>
           <div className="md:col-span-8 md:col-start-6 text-[18px] md:text-[34px] font-medium leading-[1.3] tracking-tight space-y-8 md:space-y-12 max-w-3xl text-fg">
-            <AnimatedText text="우리는 AI가 인간을 대체할 것이라는 서사에 동의하지 않습니다. 범용적인 작업이 자동화될수록, 오직 당신만이 가진 구체적인 경험과 비정형적인 지혜의 가치는 폭발적으로 상승합니다." />
-            <AnimatedText text="두레서울은 이 대체 불가능한 특이성(Singularity)을 가장 필요로 하는 곳으로 흘려보내는 소프트웨어 엔진을 구축합니다." />
+            <AnimatedText text="우리는 AI가 인간을 대체한다는 서사에 동의하지 않습니다. 범용적인 일이 자동화될수록, 오직 당신만이 겪어본 경험과 정형화되지 않은 판단의 가치는 오히려 올라갑니다." />
+            <AnimatedText text="두레서울은 이 대체 불가능한 구체성을 그것을 가장 필요로 하는 곳으로 흘려보내는 엔진을 만듭니다." />
           </div>
         </AnimatedSection>
 
@@ -460,7 +460,7 @@ export default function Home() {
             </div>
             <div className="md:col-span-8 md:col-start-6">
               <AnimatedText 
-                text="단순히 사람이 많은 것이 아닙니다. 940만 명이라는 서울의 인구를 데이터로 해체하고, 서로가 서로의 결핍을 정확히 채워줄 수 있는 수학적 임계점(Critical Mass)을 찾아냅니다. 우연을 가장한 필연적인 만남이 이곳에서 발생합니다."
+                text="사람이 많다고 만남이 생기지는 않습니다. 930만 명이 서로의 결핍을 채울 수 있을 만큼 촘촘해지는 지점, 그 임계점을 찾아내는 것이 우리의 일입니다. 우연처럼 보이지만 사실은 필연인 만남이 여기서 시작됩니다."
                 className="text-[18px] md:text-[34px] font-medium leading-[1.3] tracking-tight max-w-3xl text-fg"
               />
             </div>
@@ -474,7 +474,7 @@ export default function Home() {
               <span className="text-[34px] md:text-[46px] font-bold tracking-tight text-fg">만 명</span>
             </div>
             <p className="text-[15px] font-mono text-muted mt-6 max-w-md text-center">
-              데이터가 엮어내는 연결의 노드. 이 압도적인 스케일이 완벽한 매칭의 기반입니다.
+              서울이 품은 연결의 노드. 이 밀도가 정밀한 매칭의 전제입니다.
             </p>
           </div>
           
@@ -484,7 +484,7 @@ export default function Home() {
         {/* Section 04 */}
         <AnimatedSection border className="py-[76px] md:py-[120px]">
           <div className="mb-16">
-            <span className="text-[11px] font-mono tracking-widest uppercase block mb-4 text-muted">04 / OUR PROTOCOLS</span>
+            <span className="text-[11px] font-mono tracking-widest uppercase block mb-4 text-muted">04 / WHAT WE BUILD</span>
             <h3 className="text-[34px] md:text-[46px] font-bold leading-[0.9] tracking-tight uppercase max-w-md text-fg">Software as a catalyst.</h3>
           </div>
           
@@ -492,16 +492,16 @@ export default function Home() {
             <div className="bg-grid bg-surface p-8 md:p-12 border border-border h-full flex flex-col justify-between min-h-[360px] group transition-colors hover:bg-border/30 duration-500 backdrop-blur-sm">
               <span className="text-[11px] font-mono tracking-widest uppercase block text-muted">Human-to-Human Matching</span>
               <div>
-                <h4 className="text-[18px] md:text-[34px] font-bold leading-tight tracking-tight mb-6 text-fg">인지적 잉여를 가치로 환산하는 매칭 엔진.</h4>
-                <p className="text-[15px] md:text-[18px] font-medium leading-snug text-muted group-hover:text-fg transition-colors">자격증이나 이력서가 증명하지 못하는 당신의 미세한 재능을, 정확히 그것을 갈망하는 단 한 사람의 수요와 실시간으로 동기화합니다.</p>
+                <h4 className="text-[18px] md:text-[34px] font-bold leading-tight tracking-tight mb-6 text-fg">가진 사람과 필요한 사람을 실시간으로 잇는 매칭 엔진.</h4>
+                <p className="text-[15px] md:text-[18px] font-medium leading-snug text-muted group-hover:text-fg transition-colors break-keep">이력서가 증명하지 못하는 당신의 미세한 재능을, 정확히 그것을 찾고 있는 한 사람의 수요와 동기화합니다. 두레서울의 첫 번째 프로덕트입니다.</p>
               </div>
             </div>
             
             <div className="bg-grid bg-surface p-8 md:p-12 border border-border h-full flex flex-col justify-between min-h-[360px] group transition-colors hover:bg-border/30 duration-500 backdrop-blur-sm">
               <span className="text-[11px] font-mono tracking-widest uppercase block text-muted">Immersive Interactive Fiction</span>
               <div>
-                <h4 className="text-[18px] md:text-[34px] font-bold leading-tight tracking-tight mb-6 text-fg">선택이 세계관을 구축하는 인터랙티브 엔진.</h4>
-                <p className="text-[15px] md:text-[18px] font-medium leading-snug text-muted group-hover:text-fg transition-colors">정해진 결말을 소비하는 것을 넘어, 당신의 직관적인 선택 하나하나가 고유한 서사로 렌더링되는 완전히 새로운 층위의 몰입형 콘텐츠를 설계합니다.</p>
+                <h4 className="text-[18px] md:text-[34px] font-bold leading-tight tracking-tight mb-6 text-fg">선택이 세계를 만드는 서사 엔진.</h4>
+                <p className="text-[15px] md:text-[18px] font-medium leading-snug text-muted group-hover:text-fg transition-colors break-keep">매칭 엔진이 사람과 사람 사이의 해상도를 높인다면, 이 엔진은 이야기 안에서 당신의 선택이 갖는 해상도를 높입니다. 정해진 결말을 소비하는 대신, 직관적인 선택 하나하나가 고유한 서사로 렌더링되는 몰입형 콘텐츠를 설계합니다.</p>
               </div>
             </div>
           </div>
@@ -511,7 +511,7 @@ export default function Home() {
         <AnimatedSection border className="pt-[76px] md:pt-[120px] pb-12">
           <div className="mb-16">
             <AnimatedText 
-              text="우리는 소프트웨어가 사람을 대체하는 대신, 사람과 사람 사이의 해상도를 높이는 세계를 짓습니다. 새로운 밀도를 만드는 여정에 합류하세요."
+              text="우리는 소프트웨어가 사람을 대체하는 대신, 사람과 사람 사이의 해상도를 높이는 세계를 짓습니다. 첫 번째 매칭 베타에 초대합니다. 이메일을 남겨주시면, 서울에서 시작되는 첫 연결에 가장 먼저 합류하실 수 있습니다."
               className="text-[18px] md:text-[34px] font-bold leading-tight tracking-tight max-w-4xl text-fg"
             />
             <WaitlistForm />
