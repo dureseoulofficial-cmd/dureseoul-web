@@ -19,6 +19,9 @@
  *   maxScale  2      cap on device-pixel resolution (1.5 is plenty for a background).
  *   grain     true   film grain pass. false saves a full-screen fill per frame.
  *   ink / paper      hex overrides for the background and dot colours (e.g. ink:'#000000' to match a pure-black site).
+ *   startAt   0      real seconds to start from. startAt:22 opens on the settled city with matching already running (an "atlas").
+ *   matchLabels false  label each ongoing match with a pair of chips (who needs what, who has it) and its distance. Uses the
+ *                    page's own Korean/mono fallback fonts, so it loads nothing.
  *   reducedMotion 'auto' | 'ignore'   'auto' shows a still frame when the OS asks for reduced motion.
  *
  * Weight: this file alone. With text/hud/lockup all false nothing is drawn as type,
@@ -66,6 +69,17 @@ const CL=[
   [1750,700,110,80,.5],[560,730,160,80,.8],[850,820,140,70,.6],[1000,975,240,45,.25],[1500,150,160,60,.3],
 ];
 const RIVER_CTRL=[[2000,540],[1650,610],[1350,650],[1050,600],[750,560],[450,530],[150,460],[-80,400]];
+// Curated matches for the labelled (atlas) mode: a need in one neighbourhood, the lived answer in another.
+const SAMPLES=[
+  [{n:'성수동',x:1230,y:520,t:'카페 창업 준비 중',s:'필요 — 폐업을 겪어본 사람의 판단'},{n:'망원동',x:600,y:470,t:'폐업 3회, 재기 1회',s:'보유 — 상권 실패 경험 11년'}],
+  [{n:'연남동',x:640,y:420,t:'첫 전시 기획',s:'필요 — 빈 공간을 빌리는 요령'},{n:'을지로',x:960,y:400,t:'공간 대여 12년',s:'보유 — 조명 3개로 갤러리 만드는 법'}],
+  [{n:'신촌',x:700,y:420,t:'스타트업 첫 채용',s:'필요 — 첫 직원을 뽑는 기준'},{n:'구로',x:560,y:760,t:'채용 실패 27번',s:'보유 — 면접에서 안 보이는 것들'}],
+  [{n:'잠실',x:1450,y:740,t:'노견 첫 수술 앞둠',s:'필요 — 수술 뒤 한 달의 현실'},{n:'동대문',x:1150,y:380,t:'노견 간병 3년',s:'보유 — 밤중 응급실 지도'}],
+  [{n:'홍대',x:660,y:450,t:'독립출판 첫 인쇄',s:'필요 — 종이와 후가공 고르기'},{n:'충무로',x:980,y:420,t:'인쇄소 3대째',s:'보유 — 500부 예산으로 되는 것'}],
+  [{n:'목동',x:400,y:620,t:'쌍둥이 육아 첫 해',s:'필요 — 둘을 동시에 재우는 법'},{n:'강동',x:1700,y:650,t:'쌍둥이 셋 키운 부모',s:'보유 — 9년치 실전 노하우'}],
+  [{n:'서초',x:1150,y:820,t:'이직 연봉 협상 앞둠',s:'필요 — 첫 제안에 답하는 법'},{n:'여의도',x:700,y:640,t:'연봉 협상 40번 해본 HR',s:'보유 — 회사가 준비한 숫자의 범위'}],
+  [{n:'문래',x:560,y:700,t:'첫 철제 가구 제작',s:'필요 — 용접 없이 잇는 방법'},{n:'성북',x:1000,y:220,t:'철공소 30년',s:'보유 — 도면 없이 맞추는 감'}],
+];
 function catmull(pts,per){
   const out=[];
   for(let i=0;i<pts.length-1;i++){
@@ -113,6 +127,7 @@ function model(N){
   m.idle=[];tries=0;const r3=mulberry(777);
   while(m.idle.length<64&&tries++<40000){const a=Math.floor(r3()*N),b=Math.floor(r3()*N);const d=Math.hypot(cx[a]-cx[b],cy[a]-cy[b]);if(d<200||d>560)continue;
     const ok=i=>cx[i]>720||cy[i]<540;if(!ok(a)||!ok(b))continue;m.idle.push({a,b,d});}
+  m.curated=SAMPLES.map(([p,q])=>{const a=nearest(p.x,p.y),b=nearest(q.x,q.y);return {a,b,d:Math.hypot(cx[a]-cx[b],cy[a]-cy[b]),from:p,to:q}});
   m.shocks.push({t:7.9,x:(A.x+B.x)/2,y:(A.y+B.y)/2,speed:2200,w:120,amp:34,dur:0.6});
   for(const t of [11.0,11.45,11.9])m.shocks.push({t,x:960,y:540,speed:3200,w:220,amp:55,dur:0.45});
   m.shocks.push({t:12.3,x:960,y:540,speed:2600,w:200,amp:40,dur:0.6});
@@ -339,7 +354,7 @@ const grainTile=document.createElement('canvas');grainTile.width=grainTile.heigh
 
 // ---------- mount ----------
 function mount(container,opts={}){
-  const o=Object.assign({speed:15/22,text:true,hud:true,lockup:true,contact:true,fit:'contain',loop:'idle',particles:9400,autoplay:true,maxScale:2,grain:true,reducedMotion:'auto'},opts);
+  const o=Object.assign({speed:15/22,text:true,hud:true,lockup:true,contact:true,fit:'contain',loop:'idle',particles:9400,autoplay:true,maxScale:2,grain:true,reducedMotion:'auto',startAt:0,matchLabels:false},opts);
   const SPEED=o.speed,END=INT_DUR/SPEED;
   const MATCH_START=13.3/SPEED,MATCH_PERIOD=3.2;
   const INK=o.ink?hexToRgb(o.ink):INK_RGB,PAPER=o.paper?hexToRgb(o.paper):PAPER_RGB;
@@ -377,17 +392,55 @@ function mount(container,opts={}){
     x+=Math.sin(t*1.3+i*0.37)*0.7;y+=Math.cos(t*1.1+i*0.53)*0.7;
     px=x;py=y;
   }
-  function drawParticles(c,t,FG){
+  // starlight: every dot breathes on its own slow cycle; a few carry a soft halo
+  const PX=new Float32Array(N),PY=new Float32Array(N),TW=new Float32Array(N);
+  const twW=new Float32Array(N),twP=new Float32Array(N),big=new Uint8Array(N);
+  for(let i=0;i<N;i++){twW[i]=0.9+2.6*hash(i*13+5);twP[i]=hash(i*17+9)*6.2832;big[i]=hash(i*29+3)<0.028?1:0;}
+  const glow=document.createElement('canvas');glow.width=glow.height=32;
+  {const g=glow.getContext('2d');const rg=g.createRadialGradient(16,16,0,16,16,16);rg.addColorStop(0,'rgba(255,255,255,0.9)');rg.addColorStop(0.35,'rgba(255,255,255,0.26)');rg.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=rg;g.fillRect(0,0,32,32);}
+  function drawParticles(c,t,tReal,FG,inv){
     const a=partAlpha(t),s=partSize(t),h=s/2,dt=SPEED/FPS;
     c.save();c.globalAlpha=a;c.fillStyle=FG;c.strokeStyle=FG;c.lineWidth=Math.max(1.3,s*0.8);c.lineCap='round';
     let lines=0;c.beginPath();
     for(let i=0;i<N;i++){
-      if(t<=0.9+stag[i]*0.3)continue;
-      posAt(t,i);const x1=px,y1=py;posAt(t-dt,i);const x0=px,y0=py;
+      if(t<=0.9+stag[i]*0.3){PX[i]=-1e4;continue;}
+      posAt(t,i);const x1=px,y1=py;PX[i]=x1;PY[i]=y1;posAt(t-dt,i);const x0=px,y0=py;
       const dx=x1-x0,dy=y1-y0;
       if(dx*dx+dy*dy>5){c.moveTo(x0,y0);c.lineTo(x1,y1);lines++;}else c.fillRect(x1-h,y1-h,s,s);
     }
     if(lines)c.stroke();
+    for(let i=0;i<N;i++)TW[i]=0.5+0.5*Math.sin(tReal*twW[i]+twP[i]);
+    for(const [lo,hi,al] of [[0.82,0.9,0.22],[0.9,0.96,0.42],[0.96,1.01,0.62]]){
+      c.globalAlpha=a*al;
+      for(let i=0;i<N;i++){if(PX[i]<-1e3)continue;const w=TW[i];if(w<lo||w>=hi)continue;c.fillRect(PX[i]-h-0.6,PY[i]-h-0.6,s+1.2,s+1.2);}
+    }
+    if(inv<0.5){for(let i=0;i<N;i++){if(!big[i]||PX[i]<-1e3)continue;const w=TW[i];const r=7+7*w;c.globalAlpha=a*(0.3+0.5*w);c.drawImage(glow,PX[i]-r,PY[i]-r,2*r,2*r);}}
+    c.restore();
+  }
+  // the Han: a faint ribbon the city keeps clear of, bridges across it, and lights drifting west on the water
+  const RL=[0];for(let i=1;i<RIVER.length;i++)RL[i]=RL[i-1]+Math.hypot(RIVER[i][0]-RIVER[i-1][0],RIVER[i][1]-RIVER[i-1][1]);
+  const RLEN=RL[RL.length-1];const rp={x:0,y:0,tx:1,ty:0};
+  function riverAt(s){const d=s*RLEN;let i=1;while(i<RL.length-1&&RL[i]<d)i++;const A=RIVER[i-1],B=RIVER[i];const f=(d-RL[i-1])/((RL[i]-RL[i-1])||1);rp.x=A[0]+(B[0]-A[0])*f;rp.y=A[1]+(B[1]-A[1])*f;const tx=B[0]-A[0],ty=B[1]-A[1];const l=Math.hypot(tx,ty)||1;rp.tx=tx/l;rp.ty=ty/l;}
+  const NR=220,rs0=new Float32Array(NR),rlane=new Float32Array(NR),rspd=new Float32Array(NR),rlen=new Float32Array(NR),rph=new Float32Array(NR);
+  {const r=mulberry(3131);for(let i=0;i<NR;i++){rs0[i]=r();rlane[i]=(r()*2-1)*34;rspd[i]=(38+r()*70)/RLEN;rlen[i]=5+r()*11;rph[i]=r()*6.2832;}}
+  const BRIDGES=[0.07,0.15,0.23,0.31,0.4,0.48,0.56,0.64,0.73,0.82,0.91];
+  function drawRiver(c,ti,tReal,FG){
+    const v=seg(ti,2.9,3.9)*(ti>=6.5&&ti<9.2?0.6:1);if(v<=0)return;
+    c.save();c.strokeStyle=FG;c.lineCap='round';c.lineJoin='round';
+    const path=()=>{c.beginPath();c.moveTo(RIVER[0][0],RIVER[0][1]);for(let i=1;i<RIVER.length;i++)c.lineTo(RIVER[i][0],RIVER[i][1]);};
+    path();c.lineWidth=124;c.globalAlpha=0.03*v;c.stroke();
+    path();c.lineWidth=58;c.globalAlpha=0.032*v;c.stroke();
+    c.lineWidth=1;c.globalAlpha=0.17*v;c.beginPath();
+    for(const s of BRIDGES){riverAt(s);const nx=-rp.ty,ny=rp.tx;c.moveTo(rp.x-nx*64,rp.y-ny*64);c.lineTo(rp.x+nx*64,rp.y+ny*64);}
+    c.stroke();
+    c.lineWidth=1.3;
+    for(const [lo,hi,al] of [[0,0.5,0.22],[0.5,1.01,0.5]]){
+      c.globalAlpha=al*v;c.beginPath();
+      for(let i=0;i<NR;i++){const b=0.5+0.5*Math.sin(tReal*1.1+rph[i]);if(b<lo||b>=hi)continue;
+        const s=(rs0[i]+rspd[i]*tReal)%1;riverAt(s);const nx=-rp.ty,ny=rp.tx;const lane=rlane[i]*(1+0.18*Math.sin(tReal*0.6+rph[i]));
+        const x=rp.x+nx*lane,y=rp.y+ny*lane;const hl=rlen[i]/2;c.moveTo(x-rp.tx*hl,y-rp.ty*hl);c.lineTo(x+rp.tx*hl,y+rp.ty*hl);}
+      c.stroke();
+    }
     c.restore();
   }
   function sliceWipe(c,drawFn,region,p,K=12,seed=1){
@@ -449,9 +502,10 @@ function mount(container,opts={}){
     };
     sliceWipe(c,fn,{x:40,y:sl.L1-s,w:1840,h:sl.L2-sl.L1+s+110},seg(t,6.1,6.4),16,7);
   }
-  function chip(c,node,t,t0,side,color,title,sub){
-    const p=E.outBack(seg(t,t0,t0+0.4));if(p<=0)return;
-    const {x,y}=node;const ex=x+side*90,ey=y-92;
+  // p: reveal 0..1; side: +1 box to the right, -1 to the left; vdir: -1 above the node, +1 below
+  function chip(c,node,p,side,vdir,color,title,sub){
+    if(p<=0)return;
+    const {x,y}=node;const ex=x+side*90,ey=y+vdir*92;
     c.save();c.globalAlpha*=Math.min(1,p*1.6);c.strokeStyle=color;c.lineWidth=2;
     const q=Math.min(1,p*1.2);c.beginPath();c.moveTo(x,y);c.lineTo(x+(ex-x)*q,y+(ey-y)*q);c.stroke();
     c.textBaseline='alphabetic';c.textAlign='left';
@@ -492,8 +546,8 @@ function mount(container,opts={}){
     if(pa>0){ring(c,A.x,A.y,10+seg(t,6.55,7.1)*80,1-seg(t,6.55,7.1),C.A,1.5);c.save();c.shadowColor=C.A;c.shadowBlur=18;dot(c,A.x,A.y,7*pa,C.A);c.restore();}
     if(pb>0){ring(c,B.x,B.y,10+seg(t,6.85,7.4)*80,1-seg(t,6.85,7.4),C.B,1.5);c.save();c.shadowColor=C.B;c.shadowBlur=18;dot(c,B.x,B.y,7*pb,C.B);c.restore();}
     if(o.text){
-      chip(c,A,t,6.6,1,C.A,'성수동 · 카페 창업 준비 중','필요 — 폐업을 겪어본 사람의 판단');
-      chip(c,B,t,6.9,-1,C.B,'망원동 · 폐업 3회, 재기 1회','보유 — 상권 실패 경험 11년');
+      chip(c,A,E.outBack(seg(t,6.6,7.0)),1,-1,C.A,'성수동 · 카페 창업 준비 중','필요 — 폐업을 겪어본 사람의 판단');
+      chip(c,B,E.outBack(seg(t,6.9,7.3)),-1,-1,C.B,'망원동 · 폐업 3회, 재기 1회','보유 — 상권 실패 경험 11년');
       riseWords(c,'우연처럼 보이지만, 필연입니다.',960,938,`900 64px ${F.kr}`,64,C.paper,t,8.15,{align:'center',stagger:.09,dur:.45});
     }
     c.restore();
@@ -517,20 +571,29 @@ function mount(container,opts={}){
   }
   // 07 — the field settles; matches keep happening; a restrained lockup lower-left
   function drawMatches(c,tReal,ti){
-    if(tReal<MATCH_START||!m.idle.length)return;
-    const k0=Math.floor((tReal-MATCH_START)/MATCH_PERIOD);
+    const list=o.matchLabels?m.curated:m.idle;
+    if(tReal<MATCH_START||!list.length)return;
+    const period=o.matchLabels?MATCH_PERIOD+1.4:MATCH_PERIOD,life=o.matchLabels?4.2:2.9;
+    const k0=Math.floor((tReal-MATCH_START)/period);
     for(const k of [k0-1,k0]){
-      if(k<0)continue;const u=tReal-(MATCH_START+k*MATCH_PERIOD);if(u<0||u>2.9)continue;
-      const pr=m.idle[k%m.idle.length];const tint=k%2?C.B:C.A;
+      if(k<0)continue;const u=tReal-(MATCH_START+k*period);if(u<0||u>life)continue;
+      const pr=list[k%list.length];const curated=!!pr.from;
+      const tint=k%2?C.B:C.A;const tintA=curated?C.A:tint,tintB=curated?C.B:tint,lineColor=curated?C.paper:tint;
       posAt(ti,pr.a);const ax=px,ay=py;posAt(ti,pr.b);const bx=px,by=py;
-      const draw=E.outCubic(seg(u,0,0.6));const fade=1-seg(u,1.8,2.9);
+      const draw=E.outCubic(seg(u,0,0.6));const fade=1-seg(u,life-1.1,life);
       c.save();c.globalAlpha*=fade;
-      c.strokeStyle=tint;c.lineWidth=1.5;c.globalAlpha*=0.85;c.beginPath();c.moveTo(ax,ay);c.lineTo(lerp(ax,bx,draw),lerp(ay,by,draw));c.stroke();c.globalAlpha=fade;
-      dot(c,ax,ay,3,tint);if(draw>=1)dot(c,bx,by,3,tint);
-      if(u>0.6&&u<1.3){const a=seg(u,0.6,1.3);ring(c,ax,ay,6+a*80,1-a,tint,1.3);ring(c,bx,by,6+a*80,1-a,tint,1.3);}
-      if(o.hud&&draw>=1){c.font=`400 16px ${F.mono}`;c.letterSpacing='2px';c.fillStyle=C.paperDim;c.textAlign='center';c.textBaseline='alphabetic';
+      c.strokeStyle=lineColor;c.lineWidth=1.5;c.globalAlpha*=0.85;c.beginPath();c.moveTo(ax,ay);c.lineTo(lerp(ax,bx,draw),lerp(ay,by,draw));c.stroke();c.globalAlpha=fade;
+      dot(c,ax,ay,3,tintA);if(draw>=1)dot(c,bx,by,3,tintB);
+      if(u>0.6&&u<1.3){const a=seg(u,0.6,1.3);ring(c,ax,ay,6+a*80,1-a,tintA,1.3);ring(c,bx,by,6+a*80,1-a,tintB,1.3);}
+      if((o.hud||o.matchLabels)&&draw>=1){c.font=`400 16px ${F.mono}`;c.letterSpacing='2px';c.fillStyle=C.paperDim;c.textAlign='center';c.textBaseline='alphabetic';
         const mx=(ax+bx)/2,my=(ay+by)/2;const nx2=-(by-ay),ny2=(bx-ax);const nl=Math.hypot(nx2,ny2)||1;
-        c.fillText(`MATCH · ${(pr.d*0.019).toFixed(1)} km`,mx+nx2/nl*16,my+ny2/nl*16+5);c.letterSpacing='0px';}
+        c.fillText(`MATCH #${pad(k+1,4)} · ${(pr.d*0.019).toFixed(1)} km`,mx+nx2/nl*16,my+ny2/nl*16+5);c.letterSpacing='0px';}
+      if(o.matchLabels&&curated){
+        // chips open toward the frame's centre and away from its top edge
+        const pA=E.outBack(seg(u,0.05,0.5)),pB=E.outBack(seg(u,0.6,1.05));
+        chip(c,{x:ax,y:ay},pA,ax<960?1:-1,ay<320?1:-1,C.A,`${pr.from.n} · ${pr.from.t}`,pr.from.s);
+        chip(c,{x:bx,y:by},pB,bx<960?1:-1,by<320?1:-1,C.B,`${pr.to.n} · ${pr.to.t}`,pr.to.s);
+      }
       c.restore();
     }
   }
@@ -579,7 +642,8 @@ function mount(container,opts={}){
     const BG=mix(INK,PAPER,inv),FG=mix(PAPER,INK,inv);
     sctx.setTransform(S,0,0,S,0,0);sctx.fillStyle=BG;sctx.fillRect(0,0,W,H);
     const sh=shakeAt(ti,frame);sctx.translate(sh.x,sh.y);
-    drawParticles(sctx,ti,FG);
+    drawRiver(sctx,ti,tReal,FG);
+    drawParticles(sctx,ti,tReal,FG,inv);
     if(ti<1.0)drawIntro(sctx,ti);
     if(o.text){
       if(ti>=0.9&&ti<2.65)drawCounter(sctx,ti);
@@ -632,7 +696,7 @@ function mount(container,opts={}){
   }
 
   // ---- clock & loop ----
-  let playing=false,acc=0,startPerf=0,raf=0,visible=true,destroyed=false,ended=false;
+  let playing=false,acc=Math.max(0,o.startAt||0),startPerf=0,raf=0,visible=true,destroyed=false,ended=false;
   const listeners=new Set();
   const now=()=>performance.now();
   const time=()=>playing?acc+(now()-startPerf)/1000:acc;

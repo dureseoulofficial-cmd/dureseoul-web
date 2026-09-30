@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import Lenis from "lenis";
 import Link from "next/link";
 import HeroField from "@/components/HeroField";
+import SeoulAtlas from "@/components/SeoulAtlas";
 
 function NoiseOverlay() {
   return (
@@ -157,128 +158,6 @@ function Counter() {
   }, [isInView, shouldReduceMotion]);
 
   return <span ref={ref}>{count}</span>;
-}
-
-function NetworkGraphic() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const shouldReduceMotion = useReducedMotion();
-  const mouseRef = useRef({ x: -1000, y: -1000 });
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    
-    let animationFrameId: number;
-    let width = canvas.offsetWidth;
-    let height = canvas.offsetHeight;
-    
-    const scale = window.devicePixelRatio || 1;
-    canvas.width = width * scale;
-    canvas.height = height * scale;
-    ctx.scale(scale, scale);
-
-    const nodes = Array.from({ length: 50 }).map((_, i) => ({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4,
-      baseRadius: i % 7 === 0 ? 4 : 1.5,
-      radius: i % 7 === 0 ? 4 : 1.5,
-    }));
-
-    const render = () => {
-      ctx.clearRect(0, 0, width, height);
-      
-      if (!shouldReduceMotion) {
-        nodes.forEach(node => {
-          node.x += node.vx;
-          node.y += node.vy;
-          if (node.x < 0 || node.x > width) node.vx *= -1;
-          if (node.y < 0 || node.y > height) node.vy *= -1;
-
-          // Mouse interaction
-          const dx = mouseRef.current.x - node.x;
-          const dy = mouseRef.current.y - node.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          
-          if (dist < 150) {
-            // Attract slightly
-            node.x += dx * 0.01;
-            node.y += dy * 0.01;
-            node.radius = node.baseRadius + (1 - dist/150) * 2;
-          } else {
-            node.radius = node.baseRadius;
-          }
-        });
-      }
-
-      ctx.lineWidth = 0.5;
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const dx = nodes[i].x - nodes[j].x;
-          const dy = nodes[i].y - nodes[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          
-          if (dist < 120) {
-            ctx.beginPath();
-            ctx.strokeStyle = `rgba(244, 244, 245, ${(1 - dist / 120) * 0.3})`;
-            ctx.moveTo(nodes[i].x, nodes[i].y);
-            ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.stroke();
-          }
-        }
-      }
-
-      nodes.forEach(node => {
-        ctx.beginPath();
-        ctx.fillStyle = '#f4f4f5';
-        ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      if (!shouldReduceMotion) {
-        animationFrameId = requestAnimationFrame(render);
-      }
-    };
-
-    render();
-
-    const handleResize = () => {
-      width = canvas.offsetWidth;
-      height = canvas.offsetHeight;
-      canvas.width = width * scale;
-      canvas.height = height * scale;
-      ctx.scale(scale, scale);
-      if (shouldReduceMotion) render();
-    };
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      mouseRef.current = {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
-      };
-    };
-
-    const handleMouseLeave = () => {
-      mouseRef.current = { x: -1000, y: -1000 };
-    };
-
-    window.addEventListener('resize', handleResize);
-    canvas.addEventListener('mousemove', handleMouseMove);
-    canvas.addEventListener('mouseleave', handleMouseLeave);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      canvas.removeEventListener('mousemove', handleMouseMove);
-      canvas.removeEventListener('mouseleave', handleMouseLeave);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [shouldReduceMotion]);
-
-  return <canvas ref={canvasRef} className="w-full h-[300px] md:h-[400px] mt-12 opacity-80 cursor-crosshair" />;
 }
 
 function GhostLink({ href, children }: { href: string, children: React.ReactNode }) {
@@ -482,7 +361,7 @@ export default function Home() {
             </p>
           </div>
           
-          <NetworkGraphic />
+          <SeoulAtlas />
         </AnimatedSection>
 
         {/* Section 04 */}
@@ -522,7 +401,7 @@ export default function Home() {
           </div>
           
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 pt-8 border-t border-border">
-            <h2 className="text-[46px] md:text-[76px] font-bold leading-[0.8] tracking-tighter text-fg">두레</h2>
+            <h2 className="text-[46px] md:text-[76px] font-bold leading-[0.8] tracking-tighter text-fg">두레서울</h2>
             
             <div className="flex flex-col md:flex-row gap-8 text-[11px] md:text-[13px] font-mono text-muted">
               <div className="flex flex-col gap-2">
