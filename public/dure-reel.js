@@ -589,10 +589,11 @@ function mount(container,opts={}){
         const mx=(ax+bx)/2,my=(ay+by)/2;const nx2=-(by-ay),ny2=(bx-ax);const nl=Math.hypot(nx2,ny2)||1;
         c.fillText(`MATCH #${pad(k+1,4)} · ${(pr.d*0.019).toFixed(1)} km`,mx+nx2/nl*16,my+ny2/nl*16+5);c.letterSpacing='0px';}
       if(o.matchLabels&&curated){
-        // chips open toward the frame's centre and away from its top edge
+        // chips open toward the frame's centre; one above its node, the other below, so near pairs never overlap
         const pA=E.outBack(seg(u,0.05,0.5)),pB=E.outBack(seg(u,0.6,1.05));
-        chip(c,{x:ax,y:ay},pA,ax<960?1:-1,ay<320?1:-1,C.A,`${pr.from.n} · ${pr.from.t}`,pr.from.s);
-        chip(c,{x:bx,y:by},pB,bx<960?1:-1,by<320?1:-1,C.B,`${pr.to.n} · ${pr.to.t}`,pr.to.s);
+        const vA=ay<320?1:-1;const vB=by>820?-1:(by<320?1:-vA);
+        chip(c,{x:ax,y:ay},pA,ax<960?1:-1,vA,C.A,`${pr.from.n} · ${pr.from.t}`,pr.from.s);
+        chip(c,{x:bx,y:by},pB,bx<960?1:-1,vB,C.B,`${pr.to.n} · ${pr.to.t}`,pr.to.s);
       }
       c.restore();
     }
