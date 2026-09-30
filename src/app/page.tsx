@@ -4,6 +4,7 @@ import { motion, useReducedMotion, useInView, useScroll, useTransform } from "fr
 import { useEffect, useRef, useState } from "react";
 import Lenis from "lenis";
 import Link from "next/link";
+import HeroField from "@/components/HeroField";
 
 function NoiseOverlay() {
   return (
@@ -382,6 +383,9 @@ export default function Home() {
   return (
     <main className="min-h-screen relative overflow-hidden flex flex-col selection:bg-fg selection:text-bg">
       <NoiseOverlay />
+
+      {/* The Seoul field: 9,400 dots burst, settle into the city and keep matching. Fades out as section 01 arrives. */}
+      <HeroField />
 
       {/* Deep Dark Aurora Mesh Background */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none opacity-40 mix-blend-screen">
