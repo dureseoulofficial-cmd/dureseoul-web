@@ -375,16 +375,16 @@ export default function Home() {
             <div className="bg-grid bg-surface p-8 md:p-12 border border-border h-full flex flex-col justify-between min-h-[360px] group transition-colors hover:bg-border/30 duration-500 backdrop-blur-sm">
               <span className="text-[11px] font-mono tracking-widest uppercase block text-muted">Human-to-Human Matching</span>
               <div>
-                <h4 className="text-[18px] md:text-[34px] font-bold leading-tight tracking-tight mb-6 text-fg">가진 사람과 필요한 사람을 실시간으로 잇는 매칭 엔진.</h4>
+                <h4 className="text-[18px] md:text-[34px] font-bold leading-tight tracking-tight mb-6 text-fg break-keep">가진 사람과 필요한 사람을 실시간으로 잇는 매칭 엔진.</h4>
                 <p className="text-[15px] md:text-[18px] font-medium leading-snug text-muted group-hover:text-fg transition-colors break-keep">이력서가 증명하지 못하는 당신의 미세한 재능을, 정확히 그것을 찾고 있는 한 사람의 수요와 동기화합니다. 두레서울의 첫 번째 프로덕트입니다.</p>
               </div>
             </div>
             
             <div className="bg-grid bg-surface p-8 md:p-12 border border-border h-full flex flex-col justify-between min-h-[360px] group transition-colors hover:bg-border/30 duration-500 backdrop-blur-sm">
-              <span className="text-[11px] font-mono tracking-widest uppercase block text-muted">Immersive Interactive Fiction</span>
+              <span className="text-[11px] font-mono tracking-widest uppercase block text-muted">Made in Seoul, Used Worldwide</span>
               <div>
-                <h4 className="text-[18px] md:text-[34px] font-bold leading-tight tracking-tight mb-6 text-fg">선택이 세계를 만드는 서사 엔진.</h4>
-                <p className="text-[15px] md:text-[18px] font-medium leading-snug text-muted group-hover:text-fg transition-colors break-keep">매칭 엔진이 사람과 사람 사이의 해상도를 높인다면, 이 엔진은 이야기 안에서 당신의 선택이 갖는 해상도를 높입니다. 정해진 결말을 소비하는 대신, 직관적인 선택 하나하나가 고유한 서사로 렌더링되는 몰입형 콘텐츠를 설계합니다.</p>
+                <h4 className="text-[18px] md:text-[34px] font-bold leading-tight tracking-tight mb-6 text-fg break-keep">서울에서 만들어, 세계가 씁니다.</h4>
+                <p className="text-[15px] md:text-[18px] font-medium leading-snug text-muted group-hover:text-fg transition-colors break-keep">매칭 엔진은 시작입니다. 서울의 밀도 안에서 검증한 제품을 언어와 국경 너머의 사용자에게 그대로 보냅니다. 두레서울이 만드는 모든 것은 처음부터 전 세계를 사용자로 둡니다.</p>
               </div>
             </div>
           </div>

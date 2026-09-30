@@ -73,15 +73,16 @@ const CL=[
 ];
 const RIVER_CTRL=[[2000,540],[1650,610],[1350,650],[1050,600],[750,560],[450,530],[150,460],[-80,400]];
 // Curated matches for the labelled (atlas) mode: a need in one neighbourhood, the lived answer in another.
+// Seoul is the meeting point; the answers come from all over the world. [need, has, origin city of the answer]
 const SAMPLES=[
-  [{n:'성수동',x:1230,y:520,t:'카페 창업 준비 중',s:'필요 — 폐업을 겪어본 사람의 판단'},{n:'망원동',x:600,y:470,t:'폐업 3회, 재기 1회',s:'보유 — 상권 실패 경험 11년'}],
-  [{n:'연남동',x:640,y:420,t:'첫 전시 기획',s:'필요 — 빈 공간을 빌리는 요령'},{n:'을지로',x:960,y:400,t:'공간 대여 12년',s:'보유 — 조명 3개로 갤러리 만드는 법'}],
-  [{n:'신촌',x:700,y:420,t:'스타트업 첫 채용',s:'필요 — 첫 직원을 뽑는 기준'},{n:'구로',x:560,y:760,t:'채용 실패 27번',s:'보유 — 면접에서 안 보이는 것들'}],
-  [{n:'잠실',x:1450,y:740,t:'노견 첫 수술 앞둠',s:'필요 — 수술 뒤 한 달의 현실'},{n:'동대문',x:1150,y:380,t:'노견 간병 3년',s:'보유 — 밤중 응급실 지도'}],
-  [{n:'홍대',x:660,y:450,t:'독립출판 첫 인쇄',s:'필요 — 종이와 후가공 고르기'},{n:'충무로',x:980,y:420,t:'인쇄소 3대째',s:'보유 — 500부 예산으로 되는 것'}],
-  [{n:'목동',x:400,y:620,t:'쌍둥이 육아 첫 해',s:'필요 — 둘을 동시에 재우는 법'},{n:'강동',x:1700,y:650,t:'쌍둥이 셋 키운 부모',s:'보유 — 9년치 실전 노하우'}],
-  [{n:'서초',x:1150,y:820,t:'이직 연봉 협상 앞둠',s:'필요 — 첫 제안에 답하는 법'},{n:'여의도',x:700,y:640,t:'연봉 협상 40번 해본 HR',s:'보유 — 회사가 준비한 숫자의 범위'}],
-  [{n:'문래',x:560,y:700,t:'첫 철제 가구 제작',s:'필요 — 용접 없이 잇는 방법'},{n:'성북',x:1000,y:220,t:'철공소 30년',s:'보유 — 도면 없이 맞추는 감'}],
+  [{n:'성수동',x:1230,y:520,t:'요가를 처음 시작한 직장인',s:'필요 — 아침 30분 루틴'},{n:'이태원',x:940,y:520,t:'뭄바이에서 온 프리야',s:'보유 — 아쉬탕가 지도 12년'},'MUMBAI'],
+  [{n:'망원동',x:600,y:470,t:'주말 요리를 배우는 신혼부부',s:'필요 — 손반죽 파스타 첫 수업'},{n:'연남동',x:640,y:420,t:'볼로냐에서 온 마르코',s:'보유 — 할머니 레시피 3대째'},'BOLOGNA'],
+  [{n:'홍대',x:660,y:450,t:'스페인어가 급한 취준생',s:'필요 — 3개월 안에 면접 회화'},{n:'신촌',x:700,y:420,t:'멕시코시티에서 온 루시아',s:'보유 — 원어민 회화 지도 6년'},'MEXICO CITY'],
+  [{n:'잠실',x:1450,y:740,t:'서울 첫 해, 파리에서 온 루이',s:'필요 — 전입신고와 병원 예약'},{n:'송파',x:1550,y:780,t:'30년 토박이 김 씨',s:'보유 — 동네 행정과 병원 지도'},null],
+  [{n:'성북',x:1000,y:220,t:'첫 원두를 고르는 카페 사장',s:'필요 — 산지별 맛의 차이'},{n:'을지로',x:960,y:400,t:'나이로비에서 온 은지루',s:'보유 — 산지 직거래 로스팅 8년'},'NAIROBI'],
+  [{n:'서초',x:1150,y:820,t:'첫 해외 이직을 준비하는 개발자',s:'필요 — 베를린 면접 문화'},{n:'강남',x:1250,y:760,t:'베를린에서 5년 일한 토마스',s:'보유 — 독일식 이력서와 연봉 협상'},'BERLIN'],
+  [{n:'목동',x:400,y:620,t:'쌍둥이 육아 첫 해',s:'필요 — 둘을 동시에 재우는 법'},{n:'강동',x:1700,y:650,t:'세 아이 키운 라고스 출신 부부',s:'보유 — 9년치 실전 노하우'},'LAGOS'],
+  [{n:'문래',x:560,y:700,t:'첫 철제 가구 제작',s:'필요 — 용접 없이 잇는 방법'},{n:'성수동',x:1230,y:520,t:'공장 30년 장인',s:'보유 — 도면 없이 맞추는 감'},null],
 ];
 function catmull(pts,per){
   const out=[];
@@ -130,7 +131,7 @@ function model(N){
   m.idle=[];tries=0;const r3=mulberry(777);
   while(m.idle.length<64&&tries++<40000){const a=Math.floor(r3()*N),b=Math.floor(r3()*N);const d=Math.hypot(cx[a]-cx[b],cy[a]-cy[b]);if(d<200||d>560)continue;
     const ok=i=>cx[i]>720||cy[i]<540;if(!ok(a)||!ok(b))continue;m.idle.push({a,b,d});}
-  m.curated=SAMPLES.map(([p,q])=>{const a=nearest(p.x,p.y),b=nearest(q.x,q.y);return {a,b,d:Math.hypot(cx[a]-cx[b],cy[a]-cy[b]),from:p,to:q}});
+  m.curated=SAMPLES.map(([p,q,o])=>{const a=nearest(p.x,p.y),b=nearest(q.x,q.y);return {a,b,d:Math.hypot(cx[a]-cx[b],cy[a]-cy[b]),from:p,to:q,o}});
   m.shocks.push({t:7.9,x:(A.x+B.x)/2,y:(A.y+B.y)/2,speed:2200,w:120,amp:34,dur:0.6});
   for(const t of [11.0,11.45,11.9])m.shocks.push({t,x:960,y:540,speed:3200,w:220,amp:55,dur:0.45});
   m.shocks.push({t:12.3,x:960,y:540,speed:2600,w:200,amp:40,dur:0.6});
@@ -505,6 +506,26 @@ function mount(container,opts={}){
     };
     sliceWipe(c,fn,{x:40,y:sl.L1-s,w:1840,h:sl.L2-sl.L1+s+110},seg(t,6.1,6.4),16,7);
   }
+  // chip geometry shared by the placer and the painter
+  const CHIP_H=106;
+  function chipW(c,title,sub){c.font=`700 30px ${F.kr}`;const wt=c.measureText(title).width;c.font=`400 19px ${F.kr}`;const ws=c.measureText(sub).width;return Math.max(wt,ws)+56}
+  function chipBox(x,y,side,vdir,bw){const ex=x+side*90,ey=y+vdir*92;return {x:side>0?ex:ex-bw,y:ey-CHIP_H/2,w:bw,h:CHIP_H}}
+  const overlap=(a,b)=>{const w=Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x),h=Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y);return w>0&&h>0?w*h:0};
+  const outside=b=>{let p=0;if(b.x<40)p+=40-b.x;if(b.x+b.w>W-40)p+=b.x+b.w-(W-40);if(b.y<80)p+=80-b.y;if(b.y+b.h>H-80)p+=b.y+b.h-(H-80);return p};
+  const covers=(b,pt)=>pt.x>b.x-12&&pt.x<b.x+b.w+12&&pt.y>b.y-12&&pt.y<b.y+b.h+12;
+  // try every side/vertical combination for the two chips; prefer "toward the centre, above the node",
+  // never overlap each other, never cover the other node, stay inside the frame
+  function placeChips(c,A,B,tA,sA,tB,sB){
+    const bwA=chipW(c,tA,sA),bwB=chipW(c,tB,sB);
+    const pref=x=>x<960?1:-1;let best=null;
+    for(const sa of [pref(A.x),-pref(A.x)])for(const va of [-1,1])for(const sb of [pref(B.x),-pref(B.x)])for(const vb of [-1,1]){
+      const ba=chipBox(A.x,A.y,sa,va,bwA),bb=chipBox(B.x,B.y,sb,vb,bwB);
+      const cost=overlap(ba,bb)*4+(outside(ba)+outside(bb))*60+(covers(ba,B)?4000:0)+(covers(bb,A)?4000:0)
+        +(sa!==pref(A.x)?300:0)+(sb!==pref(B.x)?300:0)+(va===1?120:0)+(vb===1?120:0);
+      if(!best||cost<best.cost)best={cost,sa,va,sb,vb,ba,bb};
+    }
+    return best;
+  }
   // p: reveal 0..1; side: +1 box to the right, -1 to the left; vdir: -1 above the node, +1 below
   function chip(c,node,p,side,vdir,color,title,sub){
     if(p<=0)return;
@@ -588,15 +609,21 @@ function mount(container,opts={}){
       c.strokeStyle=lineColor;c.lineWidth=1.5;c.globalAlpha*=0.85;c.beginPath();c.moveTo(ax,ay);c.lineTo(lerp(ax,bx,draw),lerp(ay,by,draw));c.stroke();c.globalAlpha=fade;
       dot(c,ax,ay,3,tintA);if(draw>=1)dot(c,bx,by,3,tintB);
       if(o.pulse&&u>0.6&&u<1.3){const a=seg(u,0.6,1.3);ring(c,ax,ay,6+a*80,1-a,tintA,1.3);ring(c,bx,by,6+a*80,1-a,tintB,1.3);}
-      if((o.hud||o.matchLabels)&&draw>=1){c.font=`400 16px ${F.mono}`;c.letterSpacing='2px';c.fillStyle=C.paperDim;c.textAlign='center';c.textBaseline='alphabetic';
-        const mx=(ax+bx)/2,my=(ay+by)/2;const nx2=-(by-ay),ny2=(bx-ax);const nl=Math.hypot(nx2,ny2)||1;
-        c.fillText(`MATCH #${pad(k+1,4)} · ${(pr.d*0.019).toFixed(1)} km`,mx+nx2/nl*16,my+ny2/nl*16+5);c.letterSpacing='0px';}
+      let pl=null;
       if(o.matchLabels&&curated){
-        // chips open toward the frame's centre; one above its node, the other below, so near pairs never overlap
         const pA=E.outBack(seg(u,0.05,0.5)),pB=E.outBack(seg(u,0.6,1.05));
-        const vA=ay<320?1:-1;const vB=by>820?-1:(by<320?1:-vA);
-        chip(c,{x:ax,y:ay},pA,ax<960?1:-1,vA,C.A,`${pr.from.n} · ${pr.from.t}`,pr.from.s);
-        chip(c,{x:bx,y:by},pB,bx<960?1:-1,vB,C.B,`${pr.to.n} · ${pr.to.t}`,pr.to.s);
+        const tA=`${pr.from.n} · ${pr.from.t}`,tB=`${pr.to.n} · ${pr.to.t}`;
+        pl=placeChips(c,{x:ax,y:ay},{x:bx,y:by},tA,pr.from.s,tB,pr.to.s);
+        chip(c,{x:ax,y:ay},pA,pl.sa,pl.va,C.A,tA,pr.from.s);
+        chip(c,{x:bx,y:by},pB,pl.sb,pl.vb,C.B,tB,pr.to.s);
+      }
+      if((o.hud||o.matchLabels)&&draw>=1){
+        // the distance label sits beside the line's midpoint, on whichever side the chips leave free
+        const mx=(ax+bx)/2,my=(ay+by)/2;const nx2=-(by-ay),ny2=(bx-ax);const nl=Math.hypot(nx2,ny2)||1;
+        const sides=[1,-1].map(s=>({x:mx+nx2/nl*18*s,y:my+ny2/nl*18*s}));
+        const free=sides.find(p=>!pl||(!covers(pl.ba,p)&&!covers(pl.bb,p)));
+        if(free){c.font=`400 16px ${F.mono}`;c.letterSpacing='2px';c.fillStyle=C.paperDim;c.textAlign='center';c.textBaseline='middle';
+          c.fillText(`MATCH #${pad(k+1,4)} · ${(pr.d*0.019).toFixed(1)} km${pr.o?` · ${pr.o} → SEOUL`:''}`,free.x,free.y);c.letterSpacing='0px';}
       }
       c.restore();
     }

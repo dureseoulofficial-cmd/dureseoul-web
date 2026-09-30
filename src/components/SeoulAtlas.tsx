@@ -53,7 +53,7 @@ export default function SeoulAtlas() {
       />
       <figcaption className="mt-4 flex flex-wrap justify-between gap-x-6 gap-y-2 text-[11px] font-mono tracking-widest uppercase text-muted">
         <span>Seoul · 9,400 nodes · 1 node = 1,000 people</span>
-        <span>매칭은 한 쌍씩, 계속됩니다</span>
+        <span>세계에서 온 사람들이, 서울 안에서 한 쌍씩</span>
       </figcaption>
     </figure>
   );
