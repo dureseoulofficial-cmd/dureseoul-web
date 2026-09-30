@@ -28,6 +28,7 @@ export default function SeoulAtlas() {
           loop: "idle",
           startAt: 22, // open on the settled city; matching is already under way
           matchLabels: !small, // chips need room to stay readable
+          pulse: false, // no ring pulses: lines, chips and twinkle only
           particles: small ? 5000 : 9400,
           maxScale: 1.5,
           ink: "#070709",

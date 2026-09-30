@@ -329,7 +329,7 @@ export default function Home() {
             <h3 className="text-[28px] md:text-[46px] font-bold leading-[0.9] tracking-tight uppercase text-fg">Intelligence amplifies the specific.</h3>
           </div>
           <div className="md:col-span-8 md:col-start-6 text-[18px] md:text-[34px] font-medium leading-[1.3] tracking-tight space-y-8 md:space-y-12 max-w-3xl text-fg">
-            <AnimatedText text="우리는 AI가 인간을 대체한다는 서사에 동의하지 않습니다. 범용적인 일이 자동화될수록, 오직 당신만이 겪어본 경험과 정형화되지 않은 판단의 가치는 오히려 올라갑니다." />
+            <AnimatedText text="우리는 AI가 인간을 대체한다는 서사에 동의하지 않습니다. 누구나 할 수 있는 일이 자동화될수록, 오직 당신만이 겪어본 경험과 정형화되지 않은 판단의 가치는 오히려 올라갑니다." />
             <AnimatedText text="두레서울은 이 대체 불가능한 구체성을 그것을 가장 필요로 하는 곳으로 흘려보내는 엔진을 만듭니다." />
           </div>
         </AnimatedSection>

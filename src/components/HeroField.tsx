@@ -11,6 +11,13 @@ import type { ReelController } from "./dure-reel-types";
 
 const FADE_DISTANCE = 0.9; // of viewport height: the field is gone by the time section 01 arrives
 
+// A dark pool behind the copy (left, mid-to-low) so the headline and paragraph stay legible,
+// leaving the upper-right of the field bright. Colours are --color-bg with alpha.
+const COPY_SCRIM = [
+  "radial-gradient(ellipse 72% 78% at 26% 58%, rgba(7,7,9,0.82) 0%, rgba(7,7,9,0.55) 45%, rgba(7,7,9,0) 100%)",
+  "linear-gradient(180deg, rgba(7,7,9,0) 55%, rgba(7,7,9,0.65) 100%)",
+].join(", ");
+
 export default function HeroField() {
   const host = useRef<HTMLDivElement>(null);
   const ctl = useRef<ReelController | null>(null);
@@ -37,6 +44,9 @@ export default function HeroField() {
           hud: false,
           lockup: false,
           contact: false,
+          matching: false, // no search path or cascade of lines across the copy
+          pulse: false, // no shockwaves, shake or ring pulses: drift and twinkle only
+          alpha: 0.8,
           fit: "cover",
           loop: "idle",
           speed: 15 / 22,
@@ -69,11 +79,9 @@ export default function HeroField() {
   });
 
   return (
-    <motion.div
-      ref={host}
-      aria-hidden
-      style={{ opacity }}
-      className="fixed inset-0 z-0 pointer-events-none"
-    />
+    <motion.div aria-hidden style={{ opacity }} className="fixed inset-0 z-0 pointer-events-none">
+      <div ref={host} className="absolute inset-0" />
+      <div className="absolute inset-0" style={{ background: COPY_SCRIM }} />
+    </motion.div>
   );
 }

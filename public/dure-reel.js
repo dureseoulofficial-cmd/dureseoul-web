@@ -22,6 +22,9 @@
  *   startAt   0      real seconds to start from. startAt:22 opens on the settled city with matching already running (an "atlas").
  *   matchLabels false  label each ongoing match with a pair of chips (who needs what, who has it) and its distance. Uses the
  *                    page's own Korean/mono fallback fonts, so it loads nothing.
+ *   matching  true   the chapter-04 sequence (search path, snap, cascade of lines). false keeps a background calm under copy.
+ *   pulse     true   shockwaves through the field, camera shake and ring pulses. false = no pulsing, only drift and twinkle.
+ *   alpha     1      multiplier on dot brightness (0.8 sits better behind text).
  *   reducedMotion 'auto' | 'ignore'   'auto' shows a still frame when the OS asks for reduced motion.
  *
  * Weight: this file alone. With text/hud/lockup all false nothing is drawn as type,
@@ -239,7 +242,7 @@ function typed(c,text,x,y,p){const n=Math.floor(p*text.length);if(n>0)c.fillText
 
 // ---------- fonts ----------
 let fontsPromise=null;
-const KR_ALL='사람이 많다고 만남이 생기지는 않습니다. 940만 명 성수동 · 카페 창업 준비 중 필요 — 폐업을 겪어본 사람의 판단 망원동 · 폐업 3회, 재기 1회 보유 — 상권 실패 경험 11년 우연처럼 보이지만, 필연입니다. 사람과 사람 사이의 해상도를 높입니다. 범용은 자동화되고, 구체는 비싸진다. 두레서울';
+const KR_ALL='사람이 많다고 만남이 생기지는 않습니다. 940만 명 성수동 · 카페 창업 준비 중 필요 — 폐업을 겪어본 사람의 판단 망원동 · 폐업 3회, 재기 1회 보유 — 상권 실패 경험 11년 우연처럼 보이지만, 필연입니다. 사람과 사람 사이의 해상도를 높입니다. 흔한 일은 기계가 합니다. 겪어본 것의 값은 오릅니다. 두레서울';
 function ensureFonts(){
   if(fontsPromise)return fontsPromise;
   if(!document.querySelector('link[href*="fonts.googleapis.com"][href*="Archivo+Black"]')){
@@ -354,7 +357,7 @@ const grainTile=document.createElement('canvas');grainTile.width=grainTile.heigh
 
 // ---------- mount ----------
 function mount(container,opts={}){
-  const o=Object.assign({speed:15/22,text:true,hud:true,lockup:true,contact:true,fit:'contain',loop:'idle',particles:9400,autoplay:true,maxScale:2,grain:true,reducedMotion:'auto',startAt:0,matchLabels:false},opts);
+  const o=Object.assign({speed:15/22,text:true,hud:true,lockup:true,contact:true,fit:'contain',loop:'idle',particles:9400,autoplay:true,maxScale:2,grain:true,reducedMotion:'auto',startAt:0,matchLabels:false,matching:true,pulse:true,alpha:1},opts);
   const SPEED=o.speed,END=INT_DUR/SPEED;
   const MATCH_START=13.3/SPEED,MATCH_PERIOD=3.2;
   const INK=o.ink?hexToRgb(o.ink):INK_RGB,PAPER=o.paper?hexToRgb(o.paper):PAPER_RGB;
@@ -385,9 +388,9 @@ function mount(container,opts={}){
     if(t<=b0){x=960;y=540;}
     else{const p=E.outBackSoft(seg(t,b0,b0+0.75));x=960+(nx[i]-960)*p;y=540+(ny[i]-540)*p;}
     const o0=2.6+s*0.35;if(t>o0){const p=E.inOutCubic(seg(t,o0,o0+0.95));x+=(cx[i]-x)*p;y+=(cy[i]-y)*p;}
-    const sh=m.shocks;
-    for(let k=0;k<sh.length;k++){const ev=sh[k];const age=t-ev.t;if(age<=0||age>=ev.dur)continue;
-      const dx=x-ev.x,dy=y-ev.y;const d=Math.sqrt(dx*dx+dy*dy)+0.001;const R=age*ev.speed;const dd=(d-R)/ev.w;const g=Math.exp(-0.5*dd*dd);const amp=ev.amp*(1-age/ev.dur);x+=dx/d*g*amp;y+=dy/d*g*amp;}
+    if(o.pulse){const sh=m.shocks;
+      for(let k=0;k<sh.length;k++){const ev=sh[k];const age=t-ev.t;if(age<=0||age>=ev.dur)continue;
+        const dx=x-ev.x,dy=y-ev.y;const d=Math.sqrt(dx*dx+dy*dy)+0.001;const R=age*ev.speed;const dd=(d-R)/ev.w;const g=Math.exp(-0.5*dd*dd);const amp=ev.amp*(1-age/ev.dur);x+=dx/d*g*amp;y+=dy/d*g*amp;}}
     if(t>12.3){const z=lerp(1.10,1,E.inOutCubic(seg(t,12.3,13.6)));x=960+(x-960)*z;y=540+(y-540)*z;}
     x+=Math.sin(t*1.3+i*0.37)*0.7;y+=Math.cos(t*1.1+i*0.53)*0.7;
     px=x;py=y;
@@ -399,7 +402,7 @@ function mount(container,opts={}){
   const glow=document.createElement('canvas');glow.width=glow.height=32;
   {const g=glow.getContext('2d');const rg=g.createRadialGradient(16,16,0,16,16,16);rg.addColorStop(0,'rgba(255,255,255,0.9)');rg.addColorStop(0.35,'rgba(255,255,255,0.26)');rg.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=rg;g.fillRect(0,0,32,32);}
   function drawParticles(c,t,tReal,FG,inv){
-    const a=partAlpha(t),s=partSize(t),h=s/2,dt=SPEED/FPS;
+    const a=partAlpha(t)*o.alpha,s=partSize(t),h=s/2,dt=SPEED/FPS;
     c.save();c.globalAlpha=a;c.fillStyle=FG;c.strokeStyle=FG;c.lineWidth=Math.max(1.3,s*0.8);c.lineCap='round';
     let lines=0;c.beginPath();
     for(let i=0;i<N;i++){
@@ -461,7 +464,7 @@ function mount(container,opts={}){
     const a=1-seg(t,0.86,0.98);if(a<=0)return;
     c.save();c.globalAlpha=a;
     const pop=E.outBack(seg(t,0.08,0.3));if(pop>0)dot(c,960,540,4*pop,C.paper);
-    const rp=seg(t,0.2,0.85);if(rp>0&&rp<1)ring(c,960,540,10+rp*90,1-rp,C.paper,1.5);
+    const rp=seg(t,0.2,0.85);if(o.pulse&&rp>0&&rp<1)ring(c,960,540,10+rp*90,1-rp,C.paper,1.5);
     if(o.text){const lbl='NODE 0000001 / 9400000';c.font=`400 20px ${F.mono}`;c.letterSpacing='3px';c.textAlign='center';c.textBaseline='alphabetic';c.fillStyle=C.paperDim;typed(c,lbl,960,602,seg(t,0.3,0.7));c.letterSpacing='0px';}
     c.restore();
   }
@@ -538,13 +541,13 @@ function mount(container,opts={}){
       for(let k=1;k<=Math.min(full,segs);k++)c.lineTo(V[k].x,V[k].y);
       if(full<segs){const f=upto-full;c.lineTo(lerp(V[full].x,V[full+1].x,f),lerp(V[full].y,V[full+1].y,f));}
       c.stroke();c.restore();
-      if(snap<1)for(let k=1;k<Math.min(full+1,segs);k++){const tk=7.0+(k/segs)*0.85;const age=t-tk;if(age<0||age>0.4)continue;ring(c,V[k].x,V[k].y,6+age*90,(1-age/0.4)*(1-snap),C.paper,1.2);}
-      if(t>=7.9){const a=seg(t,7.9,8.45);ring(c,A.x,A.y,8+a*110,1-a,C.A,2);ring(c,B.x,B.y,8+a*110,1-a,C.B,2);
+      if(o.pulse&&snap<1)for(let k=1;k<Math.min(full+1,segs);k++){const tk=7.0+(k/segs)*0.85;const age=t-tk;if(age<0||age>0.4)continue;ring(c,V[k].x,V[k].y,6+age*90,(1-age/0.4)*(1-snap),C.paper,1.2);}
+      if(o.pulse&&t>=7.9){const a=seg(t,7.9,8.45);ring(c,A.x,A.y,8+a*110,1-a,C.A,2);ring(c,B.x,B.y,8+a*110,1-a,C.B,2);
         if(t<8.03){c.save();c.globalAlpha*=0.28*(1-seg(t,7.9,8.03));c.fillStyle=C.paper;c.fillRect(-100,-100,W+200,H+200);c.restore();}}
     }
     const pa=E.outBack(seg(t,6.55,6.9)),pb=E.outBack(seg(t,6.85,7.2));
-    if(pa>0){ring(c,A.x,A.y,10+seg(t,6.55,7.1)*80,1-seg(t,6.55,7.1),C.A,1.5);c.save();c.shadowColor=C.A;c.shadowBlur=18;dot(c,A.x,A.y,7*pa,C.A);c.restore();}
-    if(pb>0){ring(c,B.x,B.y,10+seg(t,6.85,7.4)*80,1-seg(t,6.85,7.4),C.B,1.5);c.save();c.shadowColor=C.B;c.shadowBlur=18;dot(c,B.x,B.y,7*pb,C.B);c.restore();}
+    if(pa>0){if(o.pulse)ring(c,A.x,A.y,10+seg(t,6.55,7.1)*80,1-seg(t,6.55,7.1),C.A,1.5);c.save();c.shadowColor=C.A;c.shadowBlur=18;dot(c,A.x,A.y,7*pa,C.A);c.restore();}
+    if(pb>0){if(o.pulse)ring(c,B.x,B.y,10+seg(t,6.85,7.4)*80,1-seg(t,6.85,7.4),C.B,1.5);c.save();c.shadowColor=C.B;c.shadowBlur=18;dot(c,B.x,B.y,7*pb,C.B);c.restore();}
     if(o.text){
       chip(c,A,E.outBack(seg(t,6.6,7.0)),1,-1,C.A,'성수동 · 카페 창업 준비 중','필요 — 폐업을 겪어본 사람의 판단');
       chip(c,B,E.outBack(seg(t,6.9,7.3)),-1,-1,C.B,'망원동 · 폐업 3회, 재기 1회','보유 — 상권 실패 경험 11년');
@@ -563,8 +566,8 @@ function mount(container,opts={}){
     const k=cardAt(t);if(k<0)return;
     const t0=[11.0,11.45,11.9][k];const age=t-t0;const sc=lerp(1.08,1,E.outExpo(seg(age,0,0.14)));
     c.save();c.translate(960,540);c.scale(sc,sc);c.textAlign='center';c.textBaseline='middle';
-    if(k===0){c.font=`900 150px ${F.kr}`;c.fillStyle=C.ink;c.fillText('범용은 자동화되고,',0,0);}
-    else if(k===1){c.font=`900 150px ${F.kr}`;const a='구체',b='는 비싸진다.';const wa=c.measureText(a).width,wb=c.measureText(b).width;const x0=-(wa+wb)/2;c.textAlign='left';
+    if(k===0){c.font=`900 150px ${F.kr}`;c.fillStyle=C.ink;c.fillText('흔한 일은 기계가 합니다.',0,0);}
+    else if(k===1){c.font=`900 150px ${F.kr}`;const a='겪어본',b=' 것의 값은 오릅니다.';const wa=c.measureText(a).width,wb=c.measureText(b).width;const x0=-(wa+wb)/2;c.textAlign='left';
       c.fillStyle=C.A;c.fillText(a,x0,0);c.fillStyle=C.paper;c.fillText(b,x0+wa,0);}
     else{c.font=`108px ${F.disp}`;c.fillStyle=C.ink;c.fillText('INTELLIGENCE AMPLIFIES',0,-66);c.fillText('THE SPECIFIC.',0,66);}
     c.restore();
@@ -584,7 +587,7 @@ function mount(container,opts={}){
       c.save();c.globalAlpha*=fade;
       c.strokeStyle=lineColor;c.lineWidth=1.5;c.globalAlpha*=0.85;c.beginPath();c.moveTo(ax,ay);c.lineTo(lerp(ax,bx,draw),lerp(ay,by,draw));c.stroke();c.globalAlpha=fade;
       dot(c,ax,ay,3,tintA);if(draw>=1)dot(c,bx,by,3,tintB);
-      if(u>0.6&&u<1.3){const a=seg(u,0.6,1.3);ring(c,ax,ay,6+a*80,1-a,tintA,1.3);ring(c,bx,by,6+a*80,1-a,tintB,1.3);}
+      if(o.pulse&&u>0.6&&u<1.3){const a=seg(u,0.6,1.3);ring(c,ax,ay,6+a*80,1-a,tintA,1.3);ring(c,bx,by,6+a*80,1-a,tintB,1.3);}
       if((o.hud||o.matchLabels)&&draw>=1){c.font=`400 16px ${F.mono}`;c.letterSpacing='2px';c.fillStyle=C.paperDim;c.textAlign='center';c.textBaseline='alphabetic';
         const mx=(ax+bx)/2,my=(ay+by)/2;const nx2=-(by-ay),ny2=(bx-ax);const nl=Math.hypot(nx2,ny2)||1;
         c.fillText(`MATCH #${pad(k+1,4)} · ${(pr.d*0.019).toFixed(1)} km`,mx+nx2/nl*16,my+ny2/nl*16+5);c.letterSpacing='0px';}
@@ -642,7 +645,7 @@ function mount(container,opts={}){
     const inv=o.text?inv01(ti):0;
     const BG=mix(INK,PAPER,inv),FG=mix(PAPER,INK,inv);
     sctx.setTransform(S,0,0,S,0,0);sctx.fillStyle=BG;sctx.fillRect(0,0,W,H);
-    const sh=shakeAt(ti,frame);sctx.translate(sh.x,sh.y);
+    const sh=o.pulse?shakeAt(ti,frame):{x:0,y:0};sctx.translate(sh.x,sh.y);
     drawRiver(sctx,ti,tReal,FG);
     drawParticles(sctx,ti,tReal,FG,inv);
     if(ti<1.0)drawIntro(sctx,ti);
@@ -651,7 +654,7 @@ function mount(container,opts={}){
       if(ti>=2.7&&ti<3.97)drawStatement(sctx,ti);
       if(ti>=4.0&&ti<6.41)drawSlogan(sctx,ti);
     }
-    if(ti>=6.5&&ti<9.75)drawMatching(sctx,ti);
+    if(o.matching&&ti>=6.5&&ti<9.75)drawMatching(sctx,ti);
     if(o.text&&ti>=9.3&&ti<11.0)drawResolution(sctx,ti);
     if(o.text)drawCards(sctx,ti);
     if(ti>=12.3){drawMatches(sctx,tReal,ti);if(o.lockup)drawLockup(sctx,ti);}

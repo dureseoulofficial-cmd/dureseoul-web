@@ -17,6 +17,9 @@ export type ReelOptions = {
   paper?: string;
   startAt?: number;
   matchLabels?: boolean;
+  matching?: boolean;
+  pulse?: boolean;
+  alpha?: number;
   reducedMotion?: "auto" | "ignore";
 };
 
