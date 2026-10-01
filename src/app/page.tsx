@@ -294,9 +294,9 @@ export default function Home() {
         {/* Hero */}
         <section className="pt-[60px] pb-[76px] md:pt-[100px] md:pb-[120px]">
           <span className="text-[11px] font-mono tracking-widest uppercase mb-12 block text-muted">Seoul — Software Studio</span>
-          <h2 className="text-[36px] md:text-[76px] font-bold mb-6 tracking-tight text-fg">두레</h2>
+          <h2 className="text-[36px] md:text-[76px] font-bold mb-6 tracking-tight text-fg">두레서울</h2>
           <p className="text-[15px] md:text-[18px] font-mono text-muted mb-16 max-w-xl">
-            DURE (두레) — Rebuilding Korea&apos;s oldest mutual-aid network for the AI era.
+            DURESEOUL (두레서울) — Rebuilding Korea&apos;s oldest mutual-aid network for the AI era.
           </p>
           
           <div className="mb-12">
@@ -317,7 +317,7 @@ export default function Home() {
             <h3 className="text-[28px] md:text-[46px] font-bold leading-[0.9] tracking-tight uppercase text-fg">Mutual aid, rebuilt as software.</h3>
           </div>
           <div className="md:col-span-8 md:col-start-6 text-[18px] md:text-[34px] font-medium leading-[1.3] tracking-tight space-y-8 md:space-y-12 max-w-3xl text-fg">
-            <AnimatedText text="과거의 두레는 모내기와 추수를 함께 하던 노동의 약속이었습니다. 우리가 짓는 두레는 경험과 안목을 주고받는 약속입니다." />
+            <AnimatedText text="과거의 두레는 모내기와 추수를 함께 하던 노동의 약속이었습니다. 우리가 짓는 두레서울은 경험과 안목을 주고받는 약속입니다." />
             <AnimatedText text="계약서 없이도 작동하던 마을의 신뢰망을, 이제 소프트웨어의 정밀함으로 다시 설계합니다. 품앗이도, 봉사도 아닙니다. 당신이 가진 것과 필요한 것이 정확히 맞물리는 교환입니다." />
           </div>
         </AnimatedSection>
