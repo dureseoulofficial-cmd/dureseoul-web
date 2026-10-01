@@ -372,19 +372,19 @@ export default function Home() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-grid bg-surface p-8 md:p-12 border border-border h-full flex flex-col justify-between min-h-[360px] group transition-colors hover:bg-border/30 duration-500 backdrop-blur-sm">
-              <span className="text-[11px] font-mono tracking-widest uppercase block text-muted">Human-to-Human Matching</span>
+            <div className="bg-grid bg-surface p-8 md:p-12 border border-border h-full flex flex-col min-h-[340px] group transition-colors hover:bg-border/30 duration-500 backdrop-blur-sm">
+              <span className="text-[11px] font-mono tracking-widest uppercase block text-muted mb-14 md:mb-24">Human-to-Human Matching</span>
               <div>
-                <h4 className="text-[18px] md:text-[34px] font-bold leading-tight tracking-tight mb-6 text-fg break-keep">가진 사람과 필요한 사람을 실시간으로 잇는 매칭 엔진.</h4>
-                <p className="text-[15px] md:text-[18px] font-medium leading-snug text-muted group-hover:text-fg transition-colors break-keep">이력서가 증명하지 못하는 당신의 미세한 재능을, 정확히 그것을 찾고 있는 한 사람의 수요와 동기화합니다. 두레서울의 첫 번째 프로덕트입니다.</p>
+                <h4 className="text-[22px] md:text-[32px] font-bold leading-[1.28] tracking-[-0.01em] mb-5 md:min-h-[2.56em] text-fg break-keep">경험을 가진 사람과 필요한 사람을 실시간으로 잇는 매칭 엔진.</h4>
+                <p className="text-[15px] md:text-[17px] font-normal leading-[1.7] max-w-[34em] text-muted group-hover:text-fg transition-colors break-keep">이력서에는 적히지 않는 경험과 기술을, 지금 그것을 찾고 있는 한 사람에게 연결합니다. 두레서울의 첫 번째 제품입니다.</p>
               </div>
             </div>
             
-            <div className="bg-grid bg-surface p-8 md:p-12 border border-border h-full flex flex-col justify-between min-h-[360px] group transition-colors hover:bg-border/30 duration-500 backdrop-blur-sm">
-              <span className="text-[11px] font-mono tracking-widest uppercase block text-muted">Made in Seoul, Used Worldwide</span>
+            <div className="bg-grid bg-surface p-8 md:p-12 border border-border h-full flex flex-col min-h-[340px] group transition-colors hover:bg-border/30 duration-500 backdrop-blur-sm">
+              <span className="text-[11px] font-mono tracking-widest uppercase block text-muted mb-14 md:mb-24">Made in Seoul, Used Worldwide</span>
               <div>
-                <h4 className="text-[18px] md:text-[34px] font-bold leading-tight tracking-tight mb-6 text-fg break-keep">서울에서 만들어, 세계가 씁니다.</h4>
-                <p className="text-[15px] md:text-[18px] font-medium leading-snug text-muted group-hover:text-fg transition-colors break-keep">매칭 엔진은 시작입니다. 서울의 밀도 안에서 검증한 제품을 언어와 국경 너머의 사용자에게 그대로 보냅니다. 두레서울이 만드는 모든 것은 처음부터 전 세계를 사용자로 둡니다.</p>
+                <h4 className="text-[22px] md:text-[32px] font-bold leading-[1.28] tracking-[-0.01em] mb-5 md:min-h-[2.56em] text-fg break-keep">서울에서 만들어, 세계가 씁니다.</h4>
+                <p className="text-[15px] md:text-[17px] font-normal leading-[1.7] max-w-[34em] text-muted group-hover:text-fg transition-colors break-keep">매칭 엔진은 시작입니다. 서울에서 먼저 써보고 다듬은 제품을 전 세계에 내놓습니다. 처음부터 어느 나라에서든 쓸 수 있게 만듭니다.</p>
               </div>
             </div>
           </div>
