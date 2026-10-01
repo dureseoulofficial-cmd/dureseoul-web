@@ -381,10 +381,10 @@ export default function Home() {
             </div>
             
             <div className="bg-grid bg-surface p-8 md:p-12 border border-border h-full flex flex-col min-h-[340px] group transition-colors hover:bg-border/30 duration-500 backdrop-blur-sm">
-              <span className="text-[11px] font-mono tracking-widest uppercase block text-muted mb-14 md:mb-24">Made in Seoul, Used Worldwide</span>
+              <span className="text-[11px] font-mono tracking-widest uppercase block text-muted mb-14 md:mb-24">Seoul Connects the World</span>
               <div>
-                <h4 className="text-[22px] md:text-[32px] font-bold leading-[1.28] tracking-[-0.01em] mb-5 md:min-h-[2.56em] text-fg break-keep">서울에서 만들어, 세계가 씁니다.</h4>
-                <p className="text-[15px] md:text-[17px] font-normal leading-[1.7] max-w-[34em] text-muted group-hover:text-fg transition-colors break-keep">매칭 엔진은 시작입니다. 서울에서 먼저 써보고 다듬은 제품을 전 세계에 내놓습니다. 처음부터 어느 나라에서든 쓸 수 있게 만듭니다.</p>
+                <h4 className="text-[22px] md:text-[32px] font-bold leading-[1.28] tracking-[-0.01em] mb-5 md:min-h-[2.56em] text-fg break-keep">메가시티 서울에서, 세계를 연결합니다.</h4>
+                <p className="text-[15px] md:text-[17px] font-normal leading-[1.7] max-w-[34em] text-muted group-hover:text-fg transition-colors break-keep">서울에는 세계 곳곳에서 온 사람들이 함께 삽니다. 두레서울은 국적과 언어가 달라도 서로의 경험을 주고받을 수 있게 잇습니다. 매칭 엔진은 그 시작입니다.</p>
               </div>
             </div>
           </div>
