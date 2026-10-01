@@ -296,7 +296,7 @@ export default function Home() {
           <span className="text-[11px] font-mono tracking-widest uppercase mb-12 block text-muted">Seoul — Software Studio</span>
           <h2 className="text-[36px] md:text-[76px] font-bold mb-6 tracking-tight text-fg">두레서울</h2>
           <p className="text-[15px] md:text-[18px] font-mono text-muted mb-16 max-w-xl">
-            DURESEOUL (두레서울) — Rebuilding Korea&apos;s oldest mutual-aid network for the AI era.
+            DURESEOUL (두레서울) — Connecting the world in the megacity of Seoul.
           </p>
           
           <div className="mb-12">
