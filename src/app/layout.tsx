@@ -10,7 +10,7 @@ const interTight = Inter_Tight({
 
 export const metadata: Metadata = {
   title: "Dureseoul | 두레서울",
-  description: "One need. A village's worth of answers.",
+  description: "두레서울 — 옛 두레의 품앗이를, 메가시티 서울에서 세계를 잇는 소프트웨어로.",
 };
 
 export default function RootLayout({
