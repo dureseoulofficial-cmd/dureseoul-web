@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter_Tight } from "next/font/google";
 import "./globals.css";
+import SourceCapture from "@/components/SourceCapture";
 
 const interTight = Inter_Tight({
   variable: "--font-inter-tight",
@@ -20,7 +21,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko" className={`${interTight.variable}`}>
-      <body>{children}</body>
+      <body>
+        <SourceCapture />
+        {children}
+      </body>
     </html>
   );
 }

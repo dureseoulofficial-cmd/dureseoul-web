@@ -4,7 +4,7 @@ export default function PrivacyPolicy() {
       <div className="max-w-4xl mx-auto space-y-8">
         <header className="space-y-4 mb-12">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight">Privacy Policy</h1>
-          <p className="text-muted text-lg">Last updated: September 14, 2026</p>
+          <p className="text-muted text-lg">Last updated: November 4, 2026</p>
         </header>
 
         <div className="space-y-12 text-lg leading-relaxed text-muted">
@@ -44,8 +44,35 @@ export default function PrivacyPolicy() {
             </p>
           </section>
 
+          <section id="class-waitlist" className="space-y-4 scroll-mt-24">
+            <h2 className="text-2xl font-bold text-fg">5. Class Waitlist and Host Interest (클래스 자리 맡기 · 호스트 신청)</h2>
+            <p>
+              회사는 2026년 11월부터 약 2주 동안 dureseoul.com/classes 에서 클래스 수요를 확인합니다. 이 기간에 「자리 맡아두기」와
+              「호스트로 클래스 열기」를 이용하면 아래 정보를 받습니다.
+            </p>
+            <ul className="list-disc list-inside space-y-2 ml-4">
+              <li><strong>자리 맡아두기:</strong> 이름, 이메일 또는 휴대폰 번호, 인원, (선택) 알게 된 경로</li>
+              <li><strong>호스트 신청:</strong> 이메일, 출신 국가, 하고 싶은 클래스 한 줄</li>
+              <li><strong>함께 저장되는 정보:</strong> 처음 들어온 링크의 유입 표시(utm, ref), 화면 언어, 신청 시각</li>
+            </ul>
+            <p>
+              <strong>목적:</strong> 신청한 클래스의 확정·결제 안내와 호스트 신청 회신에만 씁니다. 광고나 다른 마케팅 연락에는 쓰지 않습니다.
+            </p>
+            <p>
+              <strong>보관 기간:</strong> 검증 기간이 끝난 뒤 3개월 안에 삭제합니다. 실제 예약으로 이어진 경우에는 그 정보를 예약 기록으로 옮겨
+              예약 기록의 보관 기준에 따라 관리합니다. 그 전에 삭제를 원하면 아래 연락처로 요청해 주세요.
+            </p>
+            <p className="text-base">
+              From November 2026, for about two weeks, we collect the details you enter on dureseoul.com/classes (name, email or phone,
+              party size, optional referral; for host interest: email, home country, class idea), together with the referral tag of the
+              link you first arrived from and your page language. We use them only to confirm your class, arrange payment, or reply to
+              your host application, and delete them within 3 months after the trial period ends. If you go on to book, the details move
+              into your booking record. You can ask us to delete them at any time.
+            </p>
+          </section>
+
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-fg">5. Third-Party Services</h2>
+            <h2 className="text-2xl font-bold text-fg">6. Third-Party Services</h2>
             <p>
               원활한 서비스 제공을 위해 일부 데이터를 서드파티 서비스(예: Google Firebase, Vercel Analytics)를 통해 처리할 수 있으며, 
               이는 오직 서비스 운영 및 익명화된 통계 분석 목적으로만 사용됩니다. 외부 마케팅 목적으로 제3자에게 개인정보를 판매하지 않습니다.
@@ -53,7 +80,7 @@ export default function PrivacyPolicy() {
           </section>
 
           <section className="space-y-4 pb-24">
-            <h2 className="text-2xl font-bold text-fg">6. Contact Us</h2>
+            <h2 className="text-2xl font-bold text-fg">7. Contact Us</h2>
             <p>
               개인정보 보호와 관련된 모든 문의사항은 개인정보보호 책임자에게 연락해 주시기 바랍니다.<br/>
               이메일: <a href="mailto:dureseoulofficial@gmail.com" className="text-fg underline font-medium">dureseoulofficial@gmail.com</a>
