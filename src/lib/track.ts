@@ -1,5 +1,7 @@
 // 클래스 수요 검증용 유입 경로·이벤트 기록 (Supabase 프로젝트 Dureseoul, 공개 키 + insert-only 테이블)
 // 공개(publishable) 키라 코드에 있어도 된다. 테이블 권한은 INSERT 뿐이다.
+import type { Lang } from "./lang";
+
 const SUPABASE_URL = "https://wsgcrkyulgdpvukkviwa.supabase.co";
 const SUPABASE_KEY = "sb_publishable_1MQaAP1B5hW-xec40i7gYQ_tz0yzX5u";
 
@@ -62,10 +64,13 @@ export function getSrc(): Src | undefined {
   }
 }
 
+// 헤드리스·측정 도구와 알려진 검색·링크 미리보기 봇만. "bot" 같은 넓은 단어는 실제 방문자를 잘못 거를 수 있어 쓰지 않는다.
+const BOT_UA = /HeadlessChrome|Lighthouse|PTST|Googlebot|AdsBot|bingbot|Yeti|Daumoa|facebookexternalhit|meta-externalagent|Twitterbot|Slackbot|Discordbot|crawler|spider/i;
+
 /** 헤드리스 브라우저·자동화 도구·검색 봇 */
 export function isBot(): boolean {
   if (typeof navigator === "undefined") return false;
-  return /HeadlessChrome|bot|crawler|spider|facebookexternalhit|Slurp|preview/i.test(navigator.userAgent) || navigator.webdriver === true;
+  return BOT_UA.test(navigator.userAgent) || navigator.webdriver === true;
 }
 
 /** 내 기기(?me=1)이거나 자동 검사·봇이면 qa */
@@ -86,7 +91,18 @@ function visitorId(): string | null {
 }
 
 /** INSERT 만 한다. 같은 내용 중복은 서버가 조용히 무시한다. */
-export async function insertRow(table: string, row: Record<string, unknown>, keepalive = false): Promise<{ ok: boolean; rateLimited?: boolean }> {
+type Table = "class_waitlist" | "web_host_applications" | "web_events";
+
+/** 이 브라우저에서 이미 자리를 맡은 클래스인지 (같은 신청을 두 번 세지 않으려고) */
+const HELD_KEY = "dure_held";
+export function alreadyHeld(classId: string): boolean {
+  return (read(HELD_KEY) ?? "").split(",").includes(classId);
+}
+export function markHeld(classId: string) {
+  if (!alreadyHeld(classId)) write(HELD_KEY, [read(HELD_KEY), classId].filter(Boolean).join(","));
+}
+
+export async function insertRow(table: Table, row: Record<string, unknown>, keepalive = false): Promise<{ ok: boolean; rateLimited?: boolean }> {
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
       method: "POST",
@@ -103,7 +119,7 @@ export async function insertRow(table: string, row: Record<string, unknown>, kee
   }
 }
 
-export function track(name: EventName, opts: { classId?: string; lang?: "ko" | "en" } = {}) {
+export function track(name: EventName, opts: { classId?: string; lang?: Lang } = {}) {
   if (typeof window === "undefined") return;
   const props: Record<string, boolean> = {};
   if (isQa()) props.qa = true;

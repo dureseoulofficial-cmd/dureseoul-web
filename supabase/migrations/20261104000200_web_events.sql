@@ -1,4 +1,4 @@
--- 클래스 수요 검증용 웹 이벤트 (Supabase 방식을 고른 경우에만 적용)
+-- 클래스 수요 검증용 웹 이벤트
 -- 이벤트는 다섯 개만: page_view, class_view, reserve_click, reserve_submit, host_submit
 -- src = 첫 유입 utm/ref, props.qa = 내 기기·자동 검사·봇. 개인정보(이름·연락처)는 넣지 않는다.
 create table public.web_events (

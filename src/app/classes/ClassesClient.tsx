@@ -4,86 +4,93 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { Archivo_Black, IBM_Plex_Mono, Noto_Sans_KR } from "next/font/google";
 import { classes, type DureClass } from "@/data/classes";
-import { getSrc, insertRow, track } from "@/lib/track";
+import { alreadyHeld, getSrc, insertRow, markHeld, track } from "@/lib/track";
+import { detectLang, type Lang } from "@/lib/lang";
 
 const display = Archivo_Black({ subsets: ["latin"], weight: "400", variable: "--f-disp" });
 const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--f-mono" });
 const kr = Noto_Sans_KR({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--f-kr" });
 
-type Lang = "ko" | "en";
-
 const copy = {
   ko: {
     home: "두레서울",
-    eyebrow: "11월 클래스",
-    title: "서울에 사는 사람이 여는 작은 클래스",
-    lead: "호스트가 자기 동네에서 직접 진행해요. 자리를 맡아두면 확정과 결제는 따로 연락드려요.",
-    placeholder: "자리표시자",
+    hostNav: "호스트 지원",
+    title: "11월 클래스",
+    lead: "호스트가 사는 동네에서 소규모로 열려요. 지금은 자리만 맡아두고, 확정과 결제는 따로 연락드려요.",
+    caption: (n: number) => `클래스 ${n}개 · 결제는 확정 뒤에`,
+    placeholder: "예시",
     noPhoto: "사진 준비 중",
-    from: "출신",
-    when: "날짜",
+    when: "일시",
     where: "장소",
-    price: "가격",
+    price: "참가비",
     seats: "정원",
-    seatsUnit: (n: number) => `${n}명`,
+    seatsUnit: (n: number) => `최대 ${n}명`,
     won: (n: number) => `${n.toLocaleString("ko-KR")}원`,
+    tbd: "미정",
     reserve: "자리 맡아두기",
     sheetTitle: "자리 맡아두기",
     name: "이름",
-    contact: "이메일 또는 휴대폰",
-    contactHint: "확정 안내를 받을 곳",
+    contact: "연락받을 곳",
+    phone: "휴대폰",
+    email: "이메일",
+    phonePh: "010-1234-5678",
+    emailPh: "name@example.com",
+    contactHint: "확정 연락은 여기로 드려요.",
     party: "인원",
     partyUnit: (n: number) => `${n}명`,
-    heard: "어떻게 알게 됐나요? (선택)",
-    heardHint: "예: 친구 소개, 인스타그램, 숙소",
-    privacy: "연락처는 이 클래스 안내에만 쓰고, 검증 기간이 끝나면 3개월 안에 지워요.",
+    heard: "어떻게 알고 오셨어요? (선택)",
+    heardHint: "예: 친구, 인스타그램, 숙소",
+    privacy: "연락처는 이 클래스 안내에만 쓰고, 신청 기간이 끝나면 3개월 안에 지워요.",
     privacyLink: "개인정보처리방침",
-    submit: "맡아두기",
+    submit: "자리 맡아두기",
     sending: "보내는 중",
     close: "닫기",
-    doneTitle: "자리를 맡아뒀어요",
+    doneTitle: "자리 맡아뒀어요",
     doneLine: "확정·결제 안내는 개별 연락드려요.",
     errName: "이름을 적어 주세요.",
-    errContact: "이메일이나 휴대폰 번호를 확인해 주세요.",
-    errSave: "저장하지 못했어요. 잠시 후 다시 시도해 주세요.",
-    errRate: "신청이 몰리고 있어요. 잠시 후 다시 시도해 주세요.",
-    hostLink: "호스트로 클래스 열기",
-    hostTitle: "호스트로 클래스 열기",
-    hostLead: "서울에 살면서 나누고 싶은 게 있다면 남겨 주세요. 읽고 이메일로 연락드려요.",
-    email: "이메일",
+    errPhone: "휴대폰 번호를 확인해 주세요.",
+    errEmail: "이메일 주소를 확인해 주세요.",
+    errSave: "저장하지 못했어요. 잠시 뒤 다시 눌러 주세요.",
+    errRate: "지금은 저장이 안 돼요. 1분 뒤 다시 눌러 주세요.",
+    hostLink: "호스트 지원하기",
+    hostLead: "서울에 살면서 열어 보고 싶은 클래스가 있으면 남겨 주세요. 이메일로 답장드려요.",
     country: "출신 국가",
-    idea: "하고 싶은 클래스 한 줄",
+    idea: "열고 싶은 클래스 (한 줄)",
     ideaHint: "예: 집에서 만드는 멕시코 타코",
     hostSubmit: "보내기",
-    hostDone: "받았어요. 읽어 보고 이메일로 연락드릴게요.",
-    errEmail: "이메일 주소를 확인해 주세요.",
-    errHost: "국가와 클래스 내용을 적어 주세요.",
+    hostDone: "받았어요. 확인하고 이메일로 답장드릴게요.",
+    errHost: "출신 국가와 클래스를 적어 주세요.",
     footer: "주식회사 두레서울",
   },
   en: {
     home: "Dureseoul",
-    eyebrow: "November classes",
-    title: "Small classes hosted by people who live in Seoul",
-    lead: "Each host runs the class in their own neighborhood. Hold a spot and we'll contact you to confirm and arrange payment.",
-    placeholder: "Placeholder",
+    hostNav: "Host",
+    title: "November classes",
+    lead: "Small classes in the hosts' own Seoul neighborhoods. Hold a spot now and we'll get in touch to confirm and take payment.",
+    caption: (n: number) => `${n} classes · pay after confirmation`,
+    placeholder: "Sample",
     noPhoto: "Photo coming",
-    from: "From",
-    when: "Date",
-    where: "Place",
+    when: "When",
+    where: "Where",
     price: "Price",
     seats: "Spots",
-    seatsUnit: (n: number) => `${n}`,
+    seatsUnit: (n: number) => `Up to ${n}`,
     won: (n: number) => `₩${n.toLocaleString("en-US")}`,
+    tbd: "TBA",
     reserve: "Hold a spot",
     sheetTitle: "Hold a spot",
     name: "Name",
-    contact: "Email or phone",
-    contactHint: "Where we should send the confirmation",
+    contact: "How to reach you",
+    phone: "Phone",
+    email: "Email",
+    phonePh: "+82 10 1234 5678",
+    emailPh: "name@example.com",
+    contactHint: "We'll confirm your spot here.",
     party: "People",
     partyUnit: (n: number) => `${n}`,
-    heard: "How did you hear about us? (optional)",
+    heard: "How did you find us? (optional)",
     heardHint: "e.g. a friend, Instagram, your guesthouse",
-    privacy: "We only use your contact for this class and delete it within 3 months after the trial period ends.",
+    privacy: "We only use your contact for this class and delete it within 3 months after sign-ups close.",
     privacyLink: "Privacy policy",
     submit: "Hold my spot",
     sending: "Sending",
@@ -91,20 +98,18 @@ const copy = {
     doneTitle: "Your spot is held",
     doneLine: "We'll contact you directly to confirm and arrange payment.",
     errName: "Please enter your name.",
-    errContact: "Please check your email or phone number.",
-    errSave: "We couldn't save that. Please try again in a moment.",
-    errRate: "Lots of requests right now. Please try again in a moment.",
-    hostLink: "Host a class",
-    hostTitle: "Host a class",
-    hostLead: "If you live in Seoul and have something to share, leave a note. We'll read it and reply by email.",
-    email: "Email",
+    errPhone: "Please check your phone number.",
+    errEmail: "Please check your email address.",
+    errSave: "That didn't save. Please try again in a moment.",
+    errRate: "We can't save right now. Please try again in a minute.",
+    hostLink: "Apply to host",
+    hostLead: "Live in Seoul and have a class you'd like to run? Leave a note and we'll reply by email.",
     country: "Home country",
-    idea: "Your class in one line",
+    idea: "Your class, in one line",
     ideaHint: "e.g. Home-style Mexican tacos",
     hostSubmit: "Send",
-    hostDone: "Got it. We'll read it and email you.",
-    errEmail: "Please check your email address.",
-    errHost: "Please add your country and class idea.",
+    hostDone: "Got it. We'll read it and reply by email.",
+    errHost: "Please add your home country and class.",
     footer: "Dureseoul Inc.",
   },
 } as const;
@@ -119,19 +124,19 @@ function normalizeContact(v: string) {
 
 const noop = () => () => {};
 
-function detectLang(): Lang {
-  const q = new URLSearchParams(window.location.search).get("lang");
-  if (q === "ko" || q === "en") return q;
-  return (navigator.languages?.[0] ?? navigator.language ?? "ko").toLowerCase().startsWith("ko") ? "ko" : "en";
-}
 
 export default function ClassesClient() {
   // 서버에서는 ko, 브라우저에서는 브라우저 언어 (?lang=en 으로 강제 가능)
   const lang = useSyncExternalStore<Lang>(noop, detectLang, () => "ko");
   const ready = useSyncExternalStore(noop, () => true, () => false);
-  const [open, setOpen] = useState<DureClass | null>(null);
+  const [selectedClass, setSelectedClass] = useState<DureClass | null>(null);
   const [hostOpen, setHostOpen] = useState(false);
   const t = copy[lang];
+
+  function openHost() {
+    setHostOpen(true);
+    requestAnimationFrame(() => document.getElementById("host")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  }
 
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -146,24 +151,27 @@ export default function ClassesClient() {
           <Link href="/" className={`${lang === "ko" ? "font-bold" : "[font-family:var(--f-disp)]"} text-[18px] tracking-tight`}>
             {t.home}
           </Link>
-          <span className="[font-family:var(--f-mono)] text-[12px] text-[#0A0B0E]/60">{t.eyebrow}</span>
+          <button type="button" onClick={openHost} className="min-h-[44px] px-1 text-[14px] text-[#0A0B0E]/70 hover:text-[#0A0B0E] underline underline-offset-4 decoration-[#0A0B0E]/25">
+            {t.hostNav}
+          </button>
         </header>
 
         <section className="pt-4 pb-8 sm:pt-10 sm:pb-12 border-t border-[#0A0B0E]/15">
-          <h1 className="text-[28px] sm:text-[40px] font-bold leading-[1.2] tracking-[-0.02em] break-keep max-w-[18em]">{t.title}</h1>
+          <h1 className="text-[30px] sm:text-[44px] font-bold leading-[1.15] tracking-[-0.02em] break-keep">{t.title}</h1>
           <p className="mt-4 text-[15px] sm:text-[17px] leading-[1.7] text-[#0A0B0E]/70 break-keep max-w-[34em]">{t.lead}</p>
+          <p className="mt-3 [font-family:var(--f-mono)] text-[12px] text-[#0A0B0E]/55">{t.caption(classes.length)}</p>
         </section>
 
         <ul className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
           {classes.map((c) => (
             <ClassCard key={c.id} c={c} lang={lang} onReserve={() => {
               track("reserve_click", { classId: c.id, lang });
-              setOpen(c);
+              setSelectedClass(c);
             }} />
           ))}
         </ul>
 
-        <footer className="mt-14 pt-6 border-t border-[#0A0B0E]/15 flex flex-col gap-4 text-[13px] text-[#0A0B0E]/60">
+        <footer id="host" className="scroll-mt-4 mt-14 pt-6 border-t border-[#0A0B0E]/15 flex flex-col gap-4 text-[13px] text-[#0A0B0E]/60">
           <button type="button" onClick={() => setHostOpen((v) => !v)} className="self-start underline underline-offset-4 decoration-[#0A0B0E]/30 hover:text-[#0A0B0E] min-h-[44px]" aria-expanded={hostOpen}>
             {t.hostLink}
           </button>
@@ -175,7 +183,7 @@ export default function ClassesClient() {
         </footer>
       </div>
 
-      {open && <ReserveSheet c={open} lang={lang} onClose={() => setOpen(null)} />}
+      {selectedClass && <ReserveSheet c={selectedClass} lang={lang} onClose={() => setSelectedClass(null)} />}
     </main>
   );
 }
@@ -236,8 +244,8 @@ function ClassCard({ c, lang, onReserve }: { c: DureClass; lang: Lang; onReserve
         <dl className="mt-4 mb-5">
           {row(t.when, c.date[lang])}
           {row(t.where, c.place[lang])}
-          {row(t.price, c.price ? t.won(c.price) : "—")}
-          {row(t.seats, c.capacity ? t.seatsUnit(c.capacity) : "—")}
+          {row(t.price, c.price != null ? t.won(c.price) : t.tbd)}
+          {row(t.seats, c.capacity != null ? t.seatsUnit(c.capacity) : t.tbd)}
         </dl>
         <button
           type="button"
@@ -268,6 +276,7 @@ function ReserveSheet({ c, lang, onClose }: { c: DureClass; lang: Lang; onClose:
   const t = copy[lang];
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
+  const [mode, setMode] = useState<"phone" | "email">(lang === "ko" ? "phone" : "email");
   const [party, setParty] = useState(1);
   const [heard, setHeard] = useState("");
   const [busy, setBusy] = useState(false);
@@ -290,9 +299,11 @@ function ReserveSheet({ c, lang, onClose }: { c: DureClass; lang: Lang; onClose:
     const n = name.trim();
     const ct = normalizeContact(contact);
     if (!n) return setErr(t.errName);
-    if (ct.length > 80 || !(EMAIL.test(ct) || PHONE.test(ct))) return setErr(t.errContact);
+    if (mode === "phone" && !PHONE.test(ct)) return setErr(t.errPhone);
+    if (mode === "email" && (ct.length > 80 || !EMAIL.test(ct))) return setErr(t.errEmail);
     setErr("");
     setBusy(true);
+    const heldBefore = alreadyHeld(c.id);
     const src = getSrc();
     const res = await insertRow("class_waitlist", {
       class_id: c.id,
@@ -305,7 +316,9 @@ function ReserveSheet({ c, lang, onClose }: { c: DureClass; lang: Lang; onClose:
     });
     setBusy(false);
     if (!res.ok) return setErr(res.rateLimited ? t.errRate : t.errSave);
-    track("reserve_submit", { classId: c.id, lang });
+    // 같은 브라우저에서 같은 클래스를 다시 맡으면 DB가 무시하므로 이벤트도 한 번만 센다
+    if (!heldBefore) track("reserve_submit", { classId: c.id, lang });
+    markHeld(c.id);
     setDone(true);
   }
 
@@ -330,9 +343,42 @@ function ReserveSheet({ c, lang, onClose }: { c: DureClass; lang: Lang; onClose:
             <Field label={t.name}>
               <input className={inputCls} value={name} onChange={(e) => setName(e.target.value)} maxLength={40} autoComplete="name" required />
             </Field>
-            <Field label={t.contact} hint={t.contactHint}>
-              <input className={inputCls} value={contact} onChange={(e) => setContact(e.target.value)} maxLength={80} autoComplete="email" inputMode="email" autoCapitalize="none" spellCheck={false} required />
-            </Field>
+            <fieldset>
+              <legend className="block text-[13px] font-medium mb-1.5">{t.contact}</legend>
+              <div className="grid grid-cols-2 gap-2 mb-2">
+                {(["phone", "email"] as const).map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => {
+                      setMode(m);
+                      setContact("");
+                      setErr("");
+                    }}
+                    aria-pressed={mode === m}
+                    className={`min-h-[40px] rounded-[6px] border text-[14px] ${mode === m ? "bg-[#0A0B0E] text-[#F1ECE2] border-[#0A0B0E]" : "bg-white border-[#0A0B0E]/20"}`}
+                  >
+                    {t[m]}
+                  </button>
+                ))}
+              </div>
+              <input
+                key={mode}
+                className={inputCls}
+                aria-label={t[mode]}
+                value={contact}
+                onChange={(e) => setContact(e.target.value)}
+                maxLength={80}
+                type={mode === "phone" ? "tel" : "email"}
+                inputMode={mode === "phone" ? "tel" : "email"}
+                autoComplete={mode === "phone" ? "tel" : "email"}
+                placeholder={mode === "phone" ? t.phonePh : t.emailPh}
+                autoCapitalize="none"
+                spellCheck={false}
+                required
+              />
+              <span className="block mt-1 text-[12px] text-[#0A0B0E]/50">{t.contactHint}</span>
+            </fieldset>
             <fieldset>
               <legend className="block text-[13px] font-medium mb-1.5">{t.party}</legend>
               <div className="grid grid-cols-2 gap-2">

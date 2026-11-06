@@ -48,12 +48,13 @@ export default function PrivacyPolicy() {
             <h2 className="text-2xl font-bold text-fg">5. Class Waitlist and Host Interest (클래스 자리 맡기 · 호스트 신청)</h2>
             <p>
               회사는 2026년 11월부터 약 2주 동안 dureseoul.com/classes 에서 클래스 수요를 확인합니다. 이 기간에 「자리 맡아두기」와
-              「호스트로 클래스 열기」를 이용하면 아래 정보를 받습니다.
+              「호스트 지원하기」를 이용하면 아래 정보를 받습니다.
             </p>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li><strong>자리 맡아두기:</strong> 이름, 이메일 또는 휴대폰 번호, 인원, (선택) 알게 된 경로</li>
               <li><strong>호스트 신청:</strong> 이메일, 출신 국가, 하고 싶은 클래스 한 줄</li>
               <li><strong>함께 저장되는 정보:</strong> 처음 들어온 링크의 유입 표시(utm, ref), 화면 언어, 신청 시각</li>
+              <li><strong>방문 기록:</strong> 이 페이지를 연 기록과 버튼을 누른 기록. 이름·연락처 없이, 브라우저에 저장한 무작위 방문자 번호로만 묶어서 방문자 수를 셉니다. 같은 기간 뒤 함께 삭제합니다.</li>
             </ul>
             <p>
               <strong>목적:</strong> 신청한 클래스의 확정·결제 안내와 호스트 신청 회신에만 씁니다. 광고나 다른 마케팅 연락에는 쓰지 않습니다.
@@ -65,7 +66,7 @@ export default function PrivacyPolicy() {
             <p className="text-base">
               From November 2026, for about two weeks, we collect the details you enter on dureseoul.com/classes (name, email or phone,
               party size, optional referral; for host interest: email, home country, class idea), together with the referral tag of the
-              link you first arrived from and your page language. We use them only to confirm your class, arrange payment, or reply to
+              link you first arrived from and your page language. We also log page views and button taps under a random visitor number stored in your browser, with no name or contact attached, to count visitors. We use them only to confirm your class, arrange payment, or reply to
               your host application, and delete them within 3 months after the trial period ends. If you go on to book, the details move
               into your booking record. You can ask us to delete them at any time.
             </p>
