@@ -3,14 +3,14 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { captureSource, track } from "@/lib/track";
-import { detectLang } from "@/lib/lang";
+import { detectLang, type Lang } from "@/lib/lang";
 
-/** 모든 페이지: 첫 유입 utm/ref 저장 + page_view */
-export default function SourceCapture() {
+/** 모든 페이지: 첫 유입 utm/ref 저장 + page_view. lang 을 주면(/classes) 그 언어로 기록 */
+export default function SourceCapture({ lang }: { lang?: Lang }) {
   const pathname = usePathname();
   useEffect(() => {
     captureSource();
-    track("page_view", { lang: detectLang() });
-  }, [pathname]);
+    track("page_view", { lang: lang ?? detectLang() });
+  }, [pathname, lang]);
   return null;
 }

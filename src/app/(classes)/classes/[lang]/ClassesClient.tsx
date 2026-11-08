@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Archivo_Black, IBM_Plex_Mono, Noto_Sans_KR } from "next/font/google";
 import { classes, type DureClass } from "@/data/classes";
-import { alreadyHeld, getSrc, insertRow, markHeld, track } from "@/lib/track";
-import { detectLang, type Lang } from "@/lib/lang";
+import { alreadyHeld, getSrc, insertRow, isQa, markHeld, track } from "@/lib/track";
+import type { Lang } from "@/lib/lang";
 
 const display = Archivo_Black({ subsets: ["latin"], weight: "400", variable: "--f-disp" });
 const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--f-mono" });
@@ -122,13 +122,8 @@ function normalizeContact(v: string) {
   return t.includes("@") ? t.toLowerCase() : t.replace(/[\s().-]/g, "");
 }
 
-const noop = () => () => {};
-
-
-export default function ClassesClient() {
-  // 서버에서는 ko, 브라우저에서는 브라우저 언어 (?lang=en 으로 강제 가능)
-  const lang = useSyncExternalStore<Lang>(noop, detectLang, () => "ko");
-  const ready = useSyncExternalStore(noop, () => true, () => false);
+// lang 은 서버가 정한다 (src/proxy.ts: ?lang= 또는 브라우저 언어)
+export default function ClassesClient({ lang }: { lang: Lang }) {
   const [selectedClass, setSelectedClass] = useState<DureClass | null>(null);
   const [hostOpen, setHostOpen] = useState(false);
   const t = copy[lang];
@@ -138,13 +133,9 @@ export default function ClassesClient() {
     requestAnimationFrame(() => document.getElementById("host")?.scrollIntoView({ behavior: "smooth", block: "start" }));
   }
 
-  useEffect(() => {
-    document.documentElement.lang = lang;
-  }, [lang]);
-
   return (
     <main
-      className={`${display.variable} ${mono.variable} ${kr.variable} min-h-screen bg-[#F1ECE2] text-[#0A0B0E] [font-family:var(--f-kr),system-ui,sans-serif] transition-opacity duration-200 ${ready ? "opacity-100" : "opacity-0"}`}
+      className={`${display.variable} ${mono.variable} ${kr.variable} min-h-screen bg-[#F1ECE2] text-[#0A0B0E] [font-family:var(--f-kr),system-ui,sans-serif]`}
     >
       <div className="mx-auto max-w-5xl px-4 sm:px-6 pb-16">
         <header className="flex items-center justify-between py-5">
@@ -312,6 +303,7 @@ function ReserveSheet({ c, lang, onClose }: { c: DureClass; lang: Lang; onClose:
       party_size: party,
       heard_from: heard.trim().slice(0, 100) || null,
       ...(src ? { src } : {}),
+      ...(isQa() ? { qa: true } : {}),
       lang,
     });
     setBusy(false);
@@ -435,6 +427,7 @@ function HostForm({ lang }: { lang: Lang }) {
       country: country.trim().slice(0, 60),
       idea: idea.trim().slice(0, 200),
       ...(src ? { src } : {}),
+      ...(isQa() ? { qa: true } : {}),
       lang,
     });
     setBusy(false);

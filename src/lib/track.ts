@@ -2,8 +2,8 @@
 // 공개(publishable) 키라 코드에 있어도 된다. 테이블 권한은 INSERT 뿐이다.
 import type { Lang } from "./lang";
 
-const SUPABASE_URL = "https://wsgcrkyulgdpvukkviwa.supabase.co";
-const SUPABASE_KEY = "sb_publishable_1MQaAP1B5hW-xec40i7gYQ_tz0yzX5u";
+export const SUPABASE_URL = "https://wsgcrkyulgdpvukkviwa.supabase.co";
+export const SUPABASE_KEY = "sb_publishable_1MQaAP1B5hW-xec40i7gYQ_tz0yzX5u";
 
 const SRC_KEY = "dure_src";
 const QA_KEY = "dure_qa";
