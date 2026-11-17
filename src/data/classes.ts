@@ -12,8 +12,9 @@ export type DureClass = {
   host: LocalizedText; // 호스트 이름
   origin: LocalizedText; // 출신 (예: 캐나다 토론토)
   title: LocalizedText;
-  date: LocalizedText; // 예: 11월 22일 (토) 오후 2시
+  date: LocalizedText; // 예: 12월 12일 (토) 오후 2시
   place: LocalizedText; // 동네까지 (예: 마포구 연남동)
+  language: LocalizedText; // 진행 언어 (예: 영어, 한국어 도움 / English, some Korean)
   price: number | null; // 원, 미정이면 null
   capacity: number | null; // 정원, 미정이면 null
 };
@@ -28,6 +29,7 @@ export const classes: DureClass[] = [
     title: { ko: "[클래스 제목 1]", en: "[Class title 1]" },
     date: { ko: "[날짜·시간]", en: "[Date, time]" },
     place: { ko: "[구 · 동]", en: "[District, neighborhood]" },
+    language: { ko: "[진행 언어]", en: "[Class language]" },
     price: null,
     capacity: null,
   },
@@ -40,6 +42,7 @@ export const classes: DureClass[] = [
     title: { ko: "[클래스 제목 2]", en: "[Class title 2]" },
     date: { ko: "[날짜·시간]", en: "[Date, time]" },
     place: { ko: "[구 · 동]", en: "[District, neighborhood]" },
+    language: { ko: "[진행 언어]", en: "[Class language]" },
     price: null,
     capacity: null,
   },
@@ -52,6 +55,7 @@ export const classes: DureClass[] = [
     title: { ko: "[클래스 제목 3]", en: "[Class title 3]" },
     date: { ko: "[날짜·시간]", en: "[Date, time]" },
     place: { ko: "[구 · 동]", en: "[District, neighborhood]" },
+    language: { ko: "[진행 언어]", en: "[Class language]" },
     price: null,
     capacity: null,
   },

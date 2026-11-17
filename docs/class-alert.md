@@ -31,3 +31,19 @@ DB 함수 `class_test_stats(key)` 가 숫자만 돌려준다. 내 기기(`?me=1`
 select vault.update_secret(id, encode(extensions.gen_random_bytes(18), 'hex')) from vault.secrets where name = 'class_stats_key';
 ```
 (`kakao_connect_key`, `class_alert_secret` 도 같은 방법. 바꾸면 기존 링크·브라우저 저장값은 더 이상 안 된다.)
+
+## 홍보 링크 (utm)
+
+캠페인은 세 개만 쓴다. /stats 「캠페인별」 표가 이 값으로 나뉜다. utm_source 는 어디에 올렸는지(채널)를 적는다.
+
+| 누구에게 | 링크 |
+|---|---|
+| 호스트 모집: 와이프 지인 · 외국인 커뮤니티에 보낼 때 | `https://www.dureseoul.com/host?utm_campaign=host&utm_source=friends` |
+| 호스트 모집: 결혼이민자 · 외국인 배우자 모임 글 | `https://www.dureseoul.com/host?utm_campaign=host&utm_source=community` |
+| 외국인 손님 (커뮤니티 글, 무료 코드 안내용) | `https://www.dureseoul.com/classes?lang=en&utm_campaign=expat&utm_source=community` |
+| 한국인 손님 (인스타 광고) | `https://www.dureseoul.com/classes?lang=ko&utm_campaign=ko-culture&utm_source=instagram&utm_medium=paid` |
+| 영어 손님 (인스타 광고) | `https://www.dureseoul.com/classes?lang=en&utm_campaign=expat&utm_source=instagram&utm_medium=paid` |
+
+- `/host` 는 브라우저가 한국어면 한국어, 아니면 영어로 열린다. 한국어 사용자에게 영어로 보여주려면 `lang=en` 을 붙인다.
+- 첫 유입만 기록한다(같은 브라우저에서 나중에 다른 링크로 와도 처음 값 유지).
+- 호스트 질문 리스트: `docs/host-questions.md`

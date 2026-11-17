@@ -2,26 +2,25 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Archivo_Black, IBM_Plex_Mono, Noto_Sans_KR } from "next/font/google";
 import { classes, type DureClass } from "@/data/classes";
+import { Choices, EMAIL, Field, fontVars, inputCls } from "@/components/form";
 import { alreadyHeld, getSrc, insertRow, isQa, markHeld, track } from "@/lib/track";
 import type { Lang } from "@/lib/lang";
 
-const display = Archivo_Black({ subsets: ["latin"], weight: "400", variable: "--f-disp" });
-const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--f-mono" });
-const kr = Noto_Sans_KR({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--f-kr" });
+type Expect = "language" | "food_culture" | "friends" | "other";
 
 const copy = {
   ko: {
     home: "두레서울",
     hostNav: "호스트 지원",
-    title: "11월 클래스",
+    title: "12월 클래스",
     lead: "호스트가 사는 동네에서 소규모로 열려요. 지금은 자리만 맡아두고, 확정과 결제는 따로 연락드려요.",
     caption: (n: number) => `클래스 ${n}개 · 결제는 확정 뒤에`,
     placeholder: "예시",
     noPhoto: "사진 준비 중",
     when: "일시",
     where: "장소",
+    language: "언어",
     price: "참가비",
     seats: "정원",
     seatsUnit: (n: number) => `최대 ${n}명`,
@@ -38,6 +37,13 @@ const copy = {
     contactHint: "확정 연락은 여기로 드려요.",
     party: "인원",
     partyUnit: (n: number) => `${n}명`,
+    expect: "가장 기대되는 건? (선택)",
+    expectOpts: [
+      { id: "language", label: "외국어로 대화하기" },
+      { id: "food_culture", label: "그 나라 음식·문화" },
+      { id: "friends", label: "새로운 사람 만나기" },
+      { id: "other", label: "기타" },
+    ],
     heard: "어떻게 알고 오셨어요? (선택)",
     heardHint: "예: 친구, 인스타그램, 숙소",
     privacy: "연락처는 이 클래스 안내에만 쓰고, 신청 기간이 끝나면 3개월 안에 지워요.",
@@ -53,25 +59,19 @@ const copy = {
     errSave: "저장하지 못했어요. 잠시 뒤 다시 눌러 주세요.",
     errRate: "지금은 저장이 안 돼요. 1분 뒤 다시 눌러 주세요.",
     hostLink: "호스트 지원하기",
-    hostLead: "서울에 살면서 열어 보고 싶은 클래스가 있으면 남겨 주세요. 이메일로 답장드려요.",
-    country: "출신 국가",
-    idea: "열고 싶은 클래스 (한 줄)",
-    ideaHint: "예: 집에서 만드는 멕시코 타코",
-    hostSubmit: "보내기",
-    hostDone: "받았어요. 확인하고 이메일로 답장드릴게요.",
-    errHost: "출신 국가와 클래스를 적어 주세요.",
     footer: "주식회사 두레서울",
   },
   en: {
     home: "Dureseoul",
     hostNav: "Host",
-    title: "November classes",
+    title: "December classes",
     lead: "Small classes in the hosts' own Seoul neighborhoods. Hold a spot now and we'll get in touch to confirm and take payment.",
     caption: (n: number) => `${n} classes · pay after confirmation`,
     placeholder: "Sample",
     noPhoto: "Photo coming",
     when: "When",
     where: "Where",
+    language: "Language",
     price: "Price",
     seats: "Spots",
     seatsUnit: (n: number) => `Up to ${n}`,
@@ -88,6 +88,13 @@ const copy = {
     contactHint: "We'll confirm your spot here.",
     party: "People",
     partyUnit: (n: number) => `${n}`,
+    expect: "What are you most looking forward to? (optional)",
+    expectOpts: [
+      { id: "language", label: "Speaking the language" },
+      { id: "food_culture", label: "The food and culture" },
+      { id: "friends", label: "Meeting new people" },
+      { id: "other", label: "Something else" },
+    ],
     heard: "How did you find us? (optional)",
     heardHint: "e.g. a friend, Instagram, your guesthouse",
     privacy: "We only use your contact for this class and delete it within 3 months after sign-ups close.",
@@ -103,18 +110,10 @@ const copy = {
     errSave: "That didn't save. Please try again in a moment.",
     errRate: "We can't save right now. Please try again in a minute.",
     hostLink: "Apply to host",
-    hostLead: "Live in Seoul and have a class you'd like to run? Leave a note and we'll reply by email.",
-    country: "Home country",
-    idea: "Your class, in one line",
-    ideaHint: "e.g. Home-style Mexican tacos",
-    hostSubmit: "Send",
-    hostDone: "Got it. We'll read it and reply by email.",
-    errHost: "Please add your home country and class.",
     footer: "Dureseoul Inc.",
   },
 } as const;
 
-const EMAIL = /^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i;
 const PHONE = /^\+?[0-9]{9,15}$/;
 
 function normalizeContact(v: string) {
@@ -125,26 +124,21 @@ function normalizeContact(v: string) {
 // lang 은 서버가 정한다 (src/proxy.ts: ?lang= 또는 브라우저 언어)
 export default function ClassesClient({ lang }: { lang: Lang }) {
   const [selectedClass, setSelectedClass] = useState<DureClass | null>(null);
-  const [hostOpen, setHostOpen] = useState(false);
   const t = copy[lang];
-
-  function openHost() {
-    setHostOpen(true);
-    requestAnimationFrame(() => document.getElementById("host")?.scrollIntoView({ behavior: "smooth", block: "start" }));
-  }
+  const hostHref = `/host?lang=${lang}`;
 
   return (
     <main
-      className={`${display.variable} ${mono.variable} ${kr.variable} min-h-screen bg-[#F1ECE2] text-[#0A0B0E] [font-family:var(--f-kr),system-ui,sans-serif]`}
+      className={`${fontVars} min-h-screen bg-[#F1ECE2] text-[#0A0B0E] [font-family:var(--f-kr),system-ui,sans-serif]`}
     >
       <div className="mx-auto max-w-5xl px-4 sm:px-6 pb-16">
         <header className="flex items-center justify-between py-5">
           <Link href="/" className={`${lang === "ko" ? "font-bold" : "[font-family:var(--f-disp)]"} text-[18px] tracking-tight`}>
             {t.home}
           </Link>
-          <button type="button" onClick={openHost} className="min-h-[44px] px-1 text-[14px] text-[#0A0B0E]/70 hover:text-[#0A0B0E] underline underline-offset-4 decoration-[#0A0B0E]/25">
+          <a href={hostHref} className="min-h-[44px] inline-flex items-center px-1 text-[14px] text-[#0A0B0E]/70 hover:text-[#0A0B0E] underline underline-offset-4 decoration-[#0A0B0E]/25">
             {t.hostNav}
-          </button>
+          </a>
         </header>
 
         <section className="pt-4 pb-8 sm:pt-10 sm:pb-12 border-t border-[#0A0B0E]/15">
@@ -162,11 +156,10 @@ export default function ClassesClient({ lang }: { lang: Lang }) {
           ))}
         </ul>
 
-        <footer id="host" className="scroll-mt-4 mt-14 pt-6 border-t border-[#0A0B0E]/15 flex flex-col gap-4 text-[13px] text-[#0A0B0E]/60">
-          <button type="button" onClick={() => setHostOpen((v) => !v)} className="self-start underline underline-offset-4 decoration-[#0A0B0E]/30 hover:text-[#0A0B0E] min-h-[44px]" aria-expanded={hostOpen}>
+        <footer className="mt-14 pt-6 border-t border-[#0A0B0E]/15 flex flex-col gap-4 text-[13px] text-[#0A0B0E]/60">
+          <a href={hostHref} className="self-start inline-flex items-center underline underline-offset-4 decoration-[#0A0B0E]/30 hover:text-[#0A0B0E] min-h-[44px]">
             {t.hostLink}
-          </button>
-          {hostOpen && <HostForm lang={lang} />}
+          </a>
           <div className="flex flex-wrap gap-x-4 gap-y-1 [font-family:var(--f-mono)] text-[12px]">
             <span>{t.footer}</span>
             <Link href="/privacy" className="underline underline-offset-2">{t.privacyLink}</Link>
@@ -235,6 +228,7 @@ function ClassCard({ c, lang, onReserve }: { c: DureClass; lang: Lang; onReserve
         <dl className="mt-4 mb-5">
           {row(t.when, c.date[lang])}
           {row(t.where, c.place[lang])}
+          {row(t.language, c.language[lang])}
           {row(t.price, c.price != null ? t.won(c.price) : t.tbd)}
           {row(t.seats, c.capacity != null ? t.seatsUnit(c.capacity) : t.tbd)}
         </dl>
@@ -250,19 +244,6 @@ function ClassCard({ c, lang, onReserve }: { c: DureClass; lang: Lang; onReserve
   );
 }
 
-const inputCls =
-  "w-full min-h-[48px] rounded-[6px] border border-[#0A0B0E]/20 bg-white px-3 text-[16px] outline-none focus:border-[#4C8DFF] focus:ring-2 focus:ring-[#4C8DFF]/25";
-
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
-  return (
-    <label className="block">
-      <span className="block text-[13px] font-medium mb-1.5">{label}</span>
-      {children}
-      {hint && <span className="block mt-1 text-[12px] text-[#0A0B0E]/50">{hint}</span>}
-    </label>
-  );
-}
-
 function ReserveSheet({ c, lang, onClose }: { c: DureClass; lang: Lang; onClose: () => void }) {
   const t = copy[lang];
   const [name, setName] = useState("");
@@ -270,6 +251,7 @@ function ReserveSheet({ c, lang, onClose }: { c: DureClass; lang: Lang; onClose:
   const [mode, setMode] = useState<"phone" | "email">(lang === "ko" ? "phone" : "email");
   const [party, setParty] = useState(1);
   const [heard, setHeard] = useState("");
+  const [expect, setExpect] = useState<Expect | null>(null);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [err, setErr] = useState("");
@@ -302,6 +284,7 @@ function ReserveSheet({ c, lang, onClose }: { c: DureClass; lang: Lang; onClose:
       contact: ct,
       party_size: party,
       heard_from: heard.trim().slice(0, 100) || null,
+      expect,
       ...(src ? { src } : {}),
       ...(isQa() ? { qa: true } : {}),
       lang,
@@ -387,6 +370,7 @@ function ReserveSheet({ c, lang, onClose }: { c: DureClass; lang: Lang; onClose:
                 ))}
               </div>
             </fieldset>
+            <Choices legend={t.expect} options={t.expectOpts} value={expect ? [expect] : []} onChange={(v) => setExpect((cur) => (cur === v ? null : (v as Expect)))} />
             <Field label={t.heard}>
               <input className={inputCls} value={heard} onChange={(e) => setHeard(e.target.value)} maxLength={100} placeholder={t.heardHint} />
             </Field>
@@ -402,58 +386,5 @@ function ReserveSheet({ c, lang, onClose }: { c: DureClass; lang: Lang; onClose:
         )}
       </div>
     </div>
-  );
-}
-
-function HostForm({ lang }: { lang: Lang }) {
-  const t = copy[lang];
-  const [email, setEmail] = useState("");
-  const [country, setCountry] = useState("");
-  const [idea, setIdea] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [done, setDone] = useState(false);
-  const [err, setErr] = useState("");
-
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    const em = email.trim().toLowerCase();
-    if (em.length > 80 || !EMAIL.test(em)) return setErr(t.errEmail);
-    if (!country.trim() || !idea.trim()) return setErr(t.errHost);
-    setErr("");
-    setBusy(true);
-    const src = getSrc();
-    const res = await insertRow("web_host_applications", {
-      email: em,
-      country: country.trim().slice(0, 60),
-      idea: idea.trim().slice(0, 200),
-      ...(src ? { src } : {}),
-      ...(isQa() ? { qa: true } : {}),
-      lang,
-    });
-    setBusy(false);
-    if (!res.ok) return setErr(res.rateLimited ? t.errRate : t.errSave);
-    track("host_submit", { lang });
-    setDone(true);
-  }
-
-  if (done) return <p className="text-[15px] text-[#0A0B0E]">{t.hostDone}</p>;
-
-  return (
-    <form onSubmit={submit} className="max-w-md space-y-4 text-[#0A0B0E]" noValidate>
-      <p className="text-[14px] leading-[1.7] text-[#0A0B0E]/70 break-keep">{t.hostLead}</p>
-      <Field label={t.email}>
-        <input className={inputCls} value={email} onChange={(e) => setEmail(e.target.value)} maxLength={80} type="email" autoComplete="email" autoCapitalize="none" />
-      </Field>
-      <Field label={t.country}>
-        <input className={inputCls} value={country} onChange={(e) => setCountry(e.target.value)} maxLength={60} autoComplete="country-name" />
-      </Field>
-      <Field label={t.idea}>
-        <input className={inputCls} value={idea} onChange={(e) => setIdea(e.target.value)} maxLength={200} placeholder={t.ideaHint} />
-      </Field>
-      {err && <p role="alert" className="text-[13px] text-[#B83A1A]">{err}</p>}
-      <button type="submit" disabled={busy} className="min-h-[48px] px-6 rounded-[6px] bg-[#0A0B0E] text-[#F1ECE2] font-bold text-[15px] disabled:opacity-60">
-        {busy ? t.sending : t.hostSubmit}
-      </button>
-    </form>
   );
 }

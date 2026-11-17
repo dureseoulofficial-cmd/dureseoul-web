@@ -13,17 +13,28 @@ type Body = {
   class_id?: string;
   party_size?: number;
   country?: string;
+  visa?: string | null;
+  category?: string | null;
+  page?: string;
+  expect?: string | null;
   lang?: string;
   source?: string;
   total?: number;
 };
 
+const CATEGORY: Record<string, string> = { food: "요리", culture: "문화·공예", language: "언어", other: "기타" };
+const EXPECT: Record<string, string> = { language: "외국어 대화", food_culture: "음식·문화", friends: "새 사람", other: "기타" };
+const VISA: Record<string, string> = { other: "기타 비자", unsure: "비자 모름" };
+
 function message(b: Body): string {
   const via = b.source ? ` · ${b.source}` : "";
   if (b.kind === "host") {
-    return `[두레서울] 호스트 지원 1건\n${b.country ?? ""}${via}\n누적 ${b.total ?? "?"}건`;
+    const bits = [b.country, b.visa ? (VISA[b.visa] ?? b.visa) : null, b.category ? CATEGORY[b.category] : null].filter(Boolean).join(" · ");
+    const where = b.page === "host" ? "호스트 페이지" : "클래스 페이지";
+    return `[두레서울] 호스트 지원 1건 (${where})\n${bits}${via}\n누적 ${b.total ?? "?"}건 / 목표 10`;
   }
-  return `[두레서울] 자리 맡기 1건\n${b.class_id} · ${b.party_size ?? 1}명 · ${b.lang === "en" ? "영어" : "한국어"}${via}\n누적 ${b.total ?? "?"}건 / 목표 30`;
+  const want = b.expect ? ` · ${EXPECT[b.expect] ?? b.expect}` : "";
+  return `[두레서울] 자리 맡기 1건\n${b.class_id} · ${b.party_size ?? 1}명 · ${b.lang === "en" ? "영어 화면" : "한국어 화면"}${want}${via}\n누적 ${b.total ?? "?"}건 / 목표 30`;
 }
 
 Deno.serve(async (req) => {

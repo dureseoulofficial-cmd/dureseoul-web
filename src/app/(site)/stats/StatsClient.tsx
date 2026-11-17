@@ -9,16 +9,27 @@ import { SUPABASE_KEY, SUPABASE_URL } from "@/lib/track";
 const KEY = "dure_stats_key";
 const GOAL_VISITORS = 300;
 const GOAL_SIGNUPS = 30;
+const GOAL_HOST_APPS = 10;
+const GOAL_HOSTS = 3; // 확정 호스트 = classes.ts 에서 placeholder 가 아닌 카드 수
+
+const VISA_LABEL: Record<string, string> = { other: "기타", unsure: "모름" };
+const CATEGORY_LABEL: Record<string, string> = { food: "요리", culture: "문화·공예", language: "언어", other: "기타" };
+const EXPECT_LABEL: Record<string, string> = { language: "외국어 대화", food_culture: "음식·문화", friends: "새 사람", other: "기타" };
 
 type Row = { source: string; medium: string; visitors: number; clicks: number; signups: number; hosts: number };
 type ClassRow = { class_id: string; viewers: number; clicks: number; signups: number; people: number };
+type CampaignRow = { campaign: string; visitors: number; host_visitors: number; signups: number; signups_ko: number; signups_en: number; hosts: number };
+type Counts = Record<string, number>;
 type Stats = {
   updated_at: string;
-  totals: { visitors: number; clicks: number; signups: number; people: number; hosts: number };
+  totals: { visitors: number; clicks: number; signups: number; signups_ko: number; signups_en: number; people: number; hosts: number };
+  host: { visitors: number; visitors_ko: number; visitors_en: number; applications: number; from_host_page: number; by_visa: Counts; by_category: Counts };
   by_source: Row[];
+  by_campaign: CampaignRow[];
+  by_expect: Counts;
   by_class: ClassRow[];
   by_lang: { ko: number; en: number };
-  by_day: { day: string; visitors: number; signups: number }[];
+  by_day: { day: string; visitors: number; host_visitors: number; signups: number; hosts: number }[];
 };
 
 function readKey() {
@@ -35,6 +46,14 @@ function saveKey(v: string) {
   } catch {
     /* 저장 못 해도 이번 화면은 보여준다 */
   }
+}
+
+const confirmedHosts = classes.filter((c) => !c.placeholder).length;
+
+/** {"F-2": 3, "unsure": 1} → "F-2 3 · 모름 1" */
+function countLine(c: Counts | undefined, label: Record<string, string> = {}) {
+  const e = Object.entries(c ?? {}).sort((a, b) => b[1] - a[1]);
+  return e.length ? e.map(([k, n]) => `${label[k] ?? k} ${n}`).join(" · ") : "–";
 }
 
 const pct = (a: number, b: number) => (b ? `${Math.round((a / b) * 1000) / 10}%` : "–");
@@ -133,10 +152,22 @@ export default function StatsClient() {
           <>
             <section className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
               <Goal label="방문자" value={t.visitors} goal={GOAL_VISITORS} />
-              <Goal label="자리 맡기" value={t.signups} goal={GOAL_SIGNUPS} sub={`${t.people}명`} />
-              <Tile label="신청 비율" value={pct(t.signups, t.visitors)} sub={`버튼 누름 ${pct(t.clicks, t.visitors)}`} />
-              <Tile label="호스트 지원" value={String(t.hosts)} sub={`한국어 ${stats.by_lang.ko} · 영어 ${stats.by_lang.en}`} />
+              <Goal label="자리 맡기" value={t.signups} goal={GOAL_SIGNUPS} sub={`한국어 화면 ${t.signups_ko} · 영어 화면 ${t.signups_en} · ${t.people}명`} />
+              <Tile label="신청 비율" value={pct(t.signups, t.visitors)} sub={`버튼 누름 ${pct(t.clicks, t.visitors)} · 방문 한 ${stats.by_lang.ko} / 영 ${stats.by_lang.en}`} />
+              <Goal label="호스트 지원" value={t.hosts} goal={GOAL_HOST_APPS} sub={`확정 ${confirmedHosts} / ${GOAL_HOSTS} · 호스트 페이지 방문 ${stats.host.visitors}`} />
             </section>
+
+            <section className="mt-6 rounded-xl bg-white p-4 text-[14px] leading-[1.9]">
+              <p><span className="text-[#0A0B0E]/55">호스트 체류자격</span> {countLine(stats.host.by_visa, VISA_LABEL)}</p>
+              <p><span className="text-[#0A0B0E]/55">호스트 분야</span> {countLine(stats.host.by_category, CATEGORY_LABEL)}</p>
+              <p><span className="text-[#0A0B0E]/55">손님 기대</span> {countLine(stats.by_expect, EXPECT_LABEL)}</p>
+            </section>
+
+            <Table
+              title="캠페인별 (utm_campaign)"
+              head={["캠페인", "클래스 방문", "호스트 페이지", "신청 한/영", "호스트"]}
+              rows={stats.by_campaign.map((r) => [r.campaign, r.visitors, r.host_visitors, `${r.signups_ko} / ${r.signups_en}`, r.hosts])}
+            />
 
             <Table
               title="어디서 왔나"
@@ -155,7 +186,11 @@ export default function StatsClient() {
               head={["클래스", "본 사람", "버튼", "신청", "인원"]}
               rows={stats.by_class.map((r) => [classTitle(r.class_id), r.viewers, r.clicks, r.signups, r.people])}
             />
-            <Table title="날짜별" head={["날짜", "방문", "신청"]} rows={[...stats.by_day].reverse().map((r) => [r.day.slice(5), r.visitors, r.signups])} />
+            <Table
+              title="날짜별"
+              head={["날짜", "방문", "신청", "호스트 페이지", "호스트"]}
+              rows={[...stats.by_day].reverse().map((r) => [r.day.slice(5), r.visitors, r.signups, r.host_visitors, r.hosts])}
+            />
           </>
         )}
       </div>

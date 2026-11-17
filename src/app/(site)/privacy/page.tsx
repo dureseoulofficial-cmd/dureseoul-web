@@ -4,7 +4,7 @@ export default function PrivacyPolicy() {
       <div className="max-w-4xl mx-auto space-y-8">
         <header className="space-y-4 mb-12">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight">Privacy Policy</h1>
-          <p className="text-muted text-lg">Last updated: November 4, 2026</p>
+          <p className="text-muted text-lg">Last updated: November 17, 2026</p>
         </header>
 
         <div className="space-y-12 text-lg leading-relaxed text-muted">
@@ -47,25 +47,26 @@ export default function PrivacyPolicy() {
           <section id="class-waitlist" className="space-y-4 scroll-mt-24">
             <h2 className="text-2xl font-bold text-fg">5. Class Waitlist and Host Interest (클래스 자리 맡기 · 호스트 신청)</h2>
             <p>
-              회사는 2026년 11월부터 약 2주 동안 dureseoul.com/classes 에서 클래스 수요를 확인합니다. 이 기간에 「자리 맡아두기」와
-              「호스트 지원하기」를 이용하면 아래 정보를 받습니다.
+              회사는 2026년 11월부터 2026년 12월까지 dureseoul.com/classes 와 dureseoul.com/host 에서 클래스 수요와 호스트를 확인합니다. 이 기간에
+              「자리 맡아두기」와 「호스트 지원하기」를 이용하면 아래 정보를 받습니다.
             </p>
             <ul className="list-disc list-inside space-y-2 ml-4">
-              <li><strong>자리 맡아두기:</strong> 이름, 이메일 또는 휴대폰 번호, 인원, (선택) 알게 된 경로</li>
-              <li><strong>호스트 신청:</strong> 이메일, 출신 국가, 하고 싶은 클래스 한 줄</li>
+              <li><strong>자리 맡아두기:</strong> 이름, 이메일 또는 휴대폰 번호, 인원, (선택) 가장 기대되는 것, (선택) 알게 된 경로</li>
+              <li><strong>호스트 신청:</strong> 이름, 이메일, (선택) 카카오톡·인스타그램 아이디, 출신 국가, 체류자격 종류(비자 코드만, 외국인등록번호나 서류는 받지 않음), 클래스 분야와 한 줄 소개, 진행 언어, 가능한 요일, (선택) 알게 된 경로</li>
               <li><strong>함께 저장되는 정보:</strong> 처음 들어온 링크의 유입 표시(utm, ref), 화면 언어, 신청 시각</li>
               <li><strong>방문 기록:</strong> 이 페이지를 연 기록과 버튼을 누른 기록. 이름·연락처 없이, 브라우저에 저장한 무작위 방문자 번호로만 묶어서 방문자 수를 셉니다. 같은 기간 뒤 함께 삭제합니다.</li>
             </ul>
             <p>
-              <strong>목적:</strong> 신청한 클래스의 확정·결제 안내와 호스트 신청 회신에만 씁니다. 광고나 다른 마케팅 연락에는 쓰지 않습니다.
+              <strong>목적:</strong> 신청한 클래스의 확정·결제 안내와 호스트 신청 회신(호스트 가능 여부 확인 포함)에만 씁니다. 광고나 다른 마케팅 연락에는 쓰지 않습니다.
             </p>
             <p>
               <strong>보관 기간:</strong> 검증 기간이 끝난 뒤 3개월 안에 삭제합니다. 실제 예약으로 이어진 경우에는 그 정보를 예약 기록으로 옮겨
               예약 기록의 보관 기준에 따라 관리합니다. 그 전에 삭제를 원하면 아래 연락처로 요청해 주세요.
             </p>
             <p className="text-base">
-              From November 2026, for about two weeks, we collect the details you enter on dureseoul.com/classes (name, email or phone,
-              party size, optional referral; for host interest: email, home country, class idea), together with the referral tag of the
+              From November to December 2026, we collect the details you enter on dureseoul.com/classes and dureseoul.com/host (name, email or phone,
+              party size, optional expectation and referral; for host applications: name, email, optional KakaoTalk or Instagram ID, home country,
+              visa type only (no registration number or documents), class type and idea, class language, available days, optional referral), together with the referral tag of the
               link you first arrived from and your page language. We also log page views and button taps under a random visitor number stored in your browser, with no name or contact attached, to count visitors. We use them only to confirm your class, arrange payment, or reply to
               your host application, and delete them within 3 months after the trial period ends. If you go on to book, the details move
               into your booking record. You can ask us to delete them at any time.

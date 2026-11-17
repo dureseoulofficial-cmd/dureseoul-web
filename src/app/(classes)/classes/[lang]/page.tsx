@@ -4,13 +4,13 @@ import ClassesClient from "./ClassesClient";
 
 const meta = {
   ko: {
-    title: "11월 클래스 | 두레서울",
+    title: "12월 클래스 | 두레서울",
     description: "호스트가 사는 서울 동네에서 열리는 소규모 클래스. 자리를 맡아두면 확정과 결제는 따로 연락드려요.",
     siteName: "두레서울",
     locale: "ko_KR",
   },
   en: {
-    title: "November classes | Dureseoul",
+    title: "December classes | Dureseoul",
     description: "Small classes in the hosts' own Seoul neighborhoods. Hold a spot now and we'll get in touch to confirm and take payment.",
     siteName: "Dureseoul",
     locale: "en_US",
