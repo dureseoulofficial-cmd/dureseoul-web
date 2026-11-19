@@ -19,6 +19,8 @@ const EXPECT_LABEL: Record<string, string> = { language: "외국어 대화", foo
 type Row = { source: string; medium: string; visitors: number; clicks: number; signups: number; hosts: number };
 type ClassRow = { class_id: string; viewers: number; clicks: number; signups: number; people: number };
 type CampaignRow = { campaign: string; visitors: number; host_visitors: number; signups: number; signups_ko: number; signups_en: number; hosts: number };
+type AdRow = { campaign: string; content: string; visitors: number; scroll50: number; clicks: number; signups: number; hosts: number };
+type Depth = { visitors: number; d25: number; d50: number; d75: number; d100: number };
 type Counts = Record<string, number>;
 type Stats = {
   updated_at: string;
@@ -26,6 +28,8 @@ type Stats = {
   host: { visitors: number; visitors_ko: number; visitors_en: number; applications: number; from_host_page: number; by_visa: Counts; by_category: Counts };
   by_source: Row[];
   by_campaign: CampaignRow[];
+  by_ad?: AdRow[];
+  scroll?: { classes: Depth; host: Depth };
   by_expect: Counts;
   by_class: ClassRow[];
   by_lang: { ko: number; en: number };
@@ -168,6 +172,33 @@ export default function StatsClient() {
               head={["캠페인", "클래스 방문", "호스트 페이지", "신청 한/영", "호스트"]}
               rows={stats.by_campaign.map((r) => [r.campaign, r.visitors, r.host_visitors, `${r.signups_ko} / ${r.signups_en}`, r.hosts])}
             />
+
+            <Table
+              title="광고별 (utm_campaign · utm_content)"
+              head={["광고", "방문", "절반 이상 봄", "버튼", "신청", "신청 비율", "호스트"]}
+              rows={(stats.by_ad ?? []).map((r) => [
+                `${r.campaign} · ${r.content}`,
+                r.visitors,
+                pct(r.scroll50, r.visitors),
+                r.clicks,
+                r.signups,
+                pct(r.signups, r.visitors),
+                r.hosts,
+              ])}
+            />
+
+            {stats.scroll && (
+              <Table
+                title="어디까지 내려 봤나"
+                head={["페이지", "방문", "25%", "50%", "75%", "끝까지"]}
+                rows={(
+                  [
+                    ["/classes", stats.scroll.classes],
+                    ["/host", stats.scroll.host],
+                  ] as const
+                ).map(([name, d]) => [name, d.visitors, pct(d.d25, d.visitors), pct(d.d50, d.visitors), pct(d.d75, d.visitors), pct(d.d100, d.visitors)])}
+              />
+            )}
 
             <Table
               title="어디서 왔나"

@@ -47,3 +47,18 @@ select vault.update_secret(id, encode(extensions.gen_random_bytes(18), 'hex')) f
 - `/host` 는 브라우저가 한국어면 한국어, 아니면 영어로 열린다. 한국어 사용자에게 영어로 보여주려면 `lang=en` 을 붙인다.
 - 첫 유입만 기록한다(같은 브라우저에서 나중에 다른 링크로 와도 처음 값 유지).
 - 호스트 질문 리스트: `docs/host-questions.md`
+
+## 광고 링크 (v0.3.1, 대상 2 × 광고 2)
+
+세트는 대상별 2개(expat, ko-culture), 세트마다 광고 2개. 광고마다 utm_content 로 구분하고 /stats "광고별" 표에서 비교한다.
+
+| 광고 | 링크 |
+|---|---|
+| expat-a (사람·이야기) | `https://www.dureseoul.com/classes?lang=en&utm_source=ig&utm_medium=paid&utm_campaign=expat&utm_content=a` |
+| expat-b (가격 ₩10,000) | `https://www.dureseoul.com/classes?lang=en&utm_source=ig&utm_medium=paid&utm_campaign=expat&utm_content=b` |
+| ko-a (외국어) | `https://www.dureseoul.com/classes?lang=ko&utm_source=ig&utm_medium=paid&utm_campaign=ko-culture&utm_content=a` |
+| ko-b (체험) | `https://www.dureseoul.com/classes?lang=ko&utm_source=ig&utm_medium=paid&utm_campaign=ko-culture&utm_content=b` |
+
+- 유입 경로는 첫 방문 기준이다(나중에 다른 광고로 다시 와도 처음 광고로 센다).
+- 스크롤 기록: /classes · /host 에서 25/50/75/100% 지점을 처음 지날 때마다 한 번씩.
+- Meta 픽셀은 광고 계정을 만든 뒤 붙인다(개인정보처리방침 문구도 같이).

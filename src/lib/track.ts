@@ -10,7 +10,7 @@ const QA_KEY = "dure_qa";
 const VISITOR_KEY = "dure_vid";
 const SRC_PARAMS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "ref"] as const;
 
-export type EventName = "page_view" | "class_view" | "reserve_click" | "reserve_submit" | "host_submit";
+export type EventName = "page_view" | "class_view" | "reserve_click" | "reserve_submit" | "host_submit" | "scroll";
 export type Src = Partial<Record<(typeof SRC_PARAMS)[number], string>>;
 
 function store(): Storage | null {
@@ -119,9 +119,10 @@ export async function insertRow(table: Table, row: Record<string, unknown>, keep
   }
 }
 
-export function track(name: EventName, opts: { classId?: string; lang?: Lang } = {}) {
+export function track(name: EventName, opts: { classId?: string; lang?: Lang; depth?: number } = {}) {
   if (typeof window === "undefined") return;
-  const props: Record<string, boolean> = {};
+  const props: Record<string, boolean | number> = {};
+  if (opts.depth) props.depth = opts.depth;
   if (isQa()) props.qa = true;
   if (isBot()) props.bot = true;
   const row: Record<string, unknown> = {
